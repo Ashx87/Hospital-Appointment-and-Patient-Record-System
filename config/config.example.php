@@ -14,12 +14,9 @@
  * Loaded by classes/Database.php via require_once.
  */
 
-define('BASE_URL', 'http://localhost/Hospital-Appointment-and-Patient-Record-System-main/');
-
 define('DB_HOST', 'localhost');
-// Database name created in phpMyAdmin
-define('DB_NAME', 'hospital_db');
-// XAMPP default user
-define('DB_USER', 'root');
-// XAMPP default password is empty
-define('DB_PASS', '');
+define('DB_NAME', 'hospital_db');   // Database name created in phpMyAdmin
+define('DB_USER', 'root');          // XAMPP default user
+define('DB_PASS', '');              // XAMPP default password is empty
+
+define('BASE_URL', 'http://localhost/');  // Change to the actual subdirectory path

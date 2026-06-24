@@ -28,7 +28,7 @@ class Auth
         //Connect database
         $pdo=Database::getInstance();
         //SQL Injection
-        $stmt=$pdo->prepare("SELECT id, password, role, name, status FROM users WHERE email=?");
+        $stmt=$pdo->prepare("SELECT id, password, role, full_name, status FROM users WHERE email=?");
         $stmt->execute([$email]);
         $user=$stmt->fetch();
 
@@ -39,7 +39,7 @@ class Auth
             }
             $_SESSION['user_id']=$user['id'];
             $_SESSION['role']=$user['role'];
-            $_SESSION['name']=$user['name'];
+            $_SESSION['name']=$user['full_name'];
 
             return true;
         }

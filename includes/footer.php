@@ -12,12 +12,13 @@
  */
 ?>
 
-</main><!-- /.container -->
-
+</main>
 <footer class="site-footer">
-    <p>&copy; <?= date('Y') ?> Hospital Appointment System — TWT2231 Group Project</p>
+    <div class="container">
+        <p>&copy;<?= date('Y')?> Hospital Appointment System — TWT6223 Group Project</p>
+    </div>
 </footer>
 
-<script src="<?= BASE_URL ?>assets/js/app.js"></script>
+<script src="<?=BASE_URL ?>assets/js/app.js"></script>
 </body>
 </html>

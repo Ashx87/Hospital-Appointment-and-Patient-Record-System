@@ -87,9 +87,27 @@ function initDoctorSearch() {
     });
 }
 
+/* ─── Confirm destructive actions ───────────────────────────────── */
+/**
+ * Ask for confirmation before submitting any form that carries a
+ * data-confirm="message" attribute (e.g. the admin "Delete user" button).
+ */
+function initConfirmForms() {
+    document.querySelectorAll('form[data-confirm]').forEach(form => {
+        form.addEventListener('submit', (e) => {
+            if (!window.confirm(form.dataset.confirm)) {
+                e.preventDefault();
+            }
+        });
+    });
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     initDoctorSearch();
+    initConfirmForms();
     initFormValidation('login-form');
     initFormValidation('slot-form');
     initFormValidation('visit-note-form');
+    initFormValidation('create-user-form');
+    initFormValidation('create-doctor-form');
 });

@@ -19,6 +19,7 @@
  */
 
 require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/User.php';
 
 class Auth
 {
@@ -28,8 +29,26 @@ class Auth
      */
     public static function login(string $email, string $password): bool
     {
-        // TODO: Query users table, call password_verify(), check status='active'
-        return false;
+        try {
+            $user   = new User();
+            $record = $user->findByEmail($email);
+
+            if ($record === null || $record['status'] !== 'active') {
+                return false;
+            }
+
+            if (!password_verify($password, $record['password_hash'])) {
+                return false;
+            }
+
+            $_SESSION['user_id'] = (int) $record['id'];
+            $_SESSION['role']    = $record['role'];
+            $_SESSION['name']    = $record['full_name'];
+            return true;
+        } catch (Exception $e) {
+            error_log('Auth::login error: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**

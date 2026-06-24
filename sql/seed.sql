@@ -14,13 +14,16 @@
 USE hospital_db;
 
 -- ─── Test accounts (all passwords are Password123!) ─────────────────
--- password_hash values generated with PASSWORD_DEFAULT algorithm (demo placeholder values)
+-- SETUP REQUIRED: Replace <REAL_HASH> with the hash from http://localhost/gen_hash.php
+-- All 5 accounts share the same password so one hash covers all rows.
+-- After pasting, delete gen_hash.php, then reimport this file in phpMyAdmin.
+SET @pw = '<REAL_HASH>';   -- ← paste the 60-char $2y$12$... hash here ($2y$10$LW2JJi0EqHRmUZMn/GFm7OfVtbz7bNuzHI9rmbSaJRAJLpoZaibXe)
 INSERT INTO users (role, email, password_hash, full_name, phone, status) VALUES
-('admin',        'admin@hospital.com',        '$2y$12$PLACEHOLDER_HASH_ADMIN',        'System Admin',      '0123456789', 'active'),
-('doctor',       'dr.smith@hospital.com',     '$2y$12$PLACEHOLDER_HASH_DR_SMITH',     'Dr. John Smith',    '0111234567', 'active'),
-('doctor',       'dr.lee@hospital.com',       '$2y$12$PLACEHOLDER_HASH_DR_LEE',       'Dr. Sarah Lee',     '0122345678', 'active'),
-('patient',      'patient@example.com',       '$2y$12$PLACEHOLDER_HASH_PATIENT',      'Alice Johnson',     '0133456789', 'active'),
-('receptionist', 'reception@hospital.com',    '$2y$12$PLACEHOLDER_HASH_RECEPTION',    'Bob Receptionist',  '0144567890', 'active');
+('admin',        'admin@hospital.com',        @pw, 'System Admin',      '0123456789', 'active'),
+('doctor',       'dr.smith@hospital.com',     @pw, 'Dr. John Smith',    '0111234567', 'active'),
+('doctor',       'dr.lee@hospital.com',       @pw, 'Dr. Sarah Lee',     '0122345678', 'active'),
+('patient',      'patient@example.com',       @pw, 'Alice Johnson',     '0133456789', 'active'),
+('receptionist', 'reception@hospital.com',    @pw, 'Bob Receptionist',  '0144567890', 'active');
 
 -- ─── Patient profiles ────────────────────────────────────────────────
 INSERT INTO patients (user_id, date_of_birth, gender, blood_type, allergies, address) VALUES

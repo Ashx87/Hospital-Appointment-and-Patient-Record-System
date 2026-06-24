@@ -18,7 +18,7 @@
  *   classes/Appointment.php (updates slot.status on booking/cancellation)
  */
 
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/Database.php';
 
 class Slot
 {

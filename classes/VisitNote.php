@@ -18,7 +18,7 @@
  *   pages/doctor/my-appointments.php (doctor views written notes)
  */
 
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/Database.php';
 
 class VisitNote
 {

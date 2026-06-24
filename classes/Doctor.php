@@ -17,7 +17,7 @@
  *   pages/admin/doctors.php (Admin manages departments and doctors)
  */
 
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/Database.php';
 
 class Doctor
 {

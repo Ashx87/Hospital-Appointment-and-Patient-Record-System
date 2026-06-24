@@ -11,12 +11,15 @@
  *   cp config/config.example.php config/config.php
  *   Then edit the values in config.php
  *
- * Loaded by config/Database.php via require_once.
+ * Loaded by classes/Database.php via require_once.
  */
 
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'hospital_db');   // Database name created in phpMyAdmin
-define('DB_USER', 'root');          // XAMPP default user
-define('DB_PASS', '');              // XAMPP default password is empty
+define('BASE_URL', 'http://localhost/Hospital-Appointment-and-Patient-Record-System-main/');
 
-define('BASE_URL', 'http://localhost/Project/');  // Change to the actual subdirectory path
+define('DB_HOST', 'localhost');
+// Database name created in phpMyAdmin
+define('DB_NAME', 'hospital_db');
+// XAMPP default user
+define('DB_USER', 'root');
+// XAMPP default password is empty
+define('DB_PASS', '');

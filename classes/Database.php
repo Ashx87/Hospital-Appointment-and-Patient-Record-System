@@ -1,6 +1,6 @@
 <?php
 /**
- * config/Database.php — PDO Database Connection Singleton
+ * classes/Database.php — PDO Database Connection Singleton
  *
  * Responsibilities:
  *   - Maintains a single PDO connection instance throughout the application (Singleton pattern)
@@ -16,7 +16,7 @@
  *   $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
  */
 
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config/config.php';
 
 class Database
 {

@@ -1,4 +1,4 @@
-﻿/*
+/*
  * assets/css/style.css — Global stylesheet
  *
  * Responsibilities:
@@ -10,7 +10,7 @@
  * Loaded to all pages by includes/header.php via <link rel="stylesheet">.
  */
 
-/* ─── Reset & Base ─────────────────────────────────────────────── */
+/*Reset & Base*/
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -23,14 +23,14 @@ body {
 a { color: #2c7be5; text-decoration: none; }
 a:hover { text-decoration: underline; }
 
-/* ─── Navigation ────────────────────────────────────────────────── */
-.site-header {
+/*Navigation*/
+header {
     background: #1a3c6e;
     padding: 0 1.5rem;
     box-shadow: 0 2px 4px rgba(0,0,0,.2);
 }
 
-.site-header nav {
+header nav {
     display: flex;
     align-items: center;
     gap: 1.5rem;
@@ -39,29 +39,29 @@ a:hover { text-decoration: underline; }
     margin: 0 auto;
 }
 
-.logo { color: #fff; font-size: 1.2rem; font-weight: 700; }
+.logo { color: #ffffff; font-size: 1.2rem; font-weight: 700; }
 
-.nav-links {
+nav ul {
     display: flex;
     list-style: none;
     gap: 1rem;
     flex: 1;
 }
 
-.nav-links a { color: #cce0ff; font-size: .9rem; }
-.nav-links a:hover { color: #fff; text-decoration: none; }
+nav ul a { color: #cce0ff; font-size: .9rem; }
+nav ul a:hover { color: #fff; text-decoration: none; }
 
 .user-info { color: #aad0ff; font-size: .85rem; display: flex; gap: 1rem; align-items: center; }
 .user-info a { color: #f0a500; }
 
-/* ─── Layout ────────────────────────────────────────────────────── */
+/*Layout*/
 .container {
     max-width: 1200px;
     margin: 1.5rem auto;
     padding: 0 1.5rem;
 }
 
-/* ─── Flash Messages ────────────────────────────────────────────── */
+/*Flash Messages*/
 .flash {
     padding: .75rem 1rem;
     border-radius: 4px;
@@ -71,23 +71,24 @@ a:hover { text-decoration: underline; }
 .flash--success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
 .flash--error   { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
 
-/* ─── Buttons ───────────────────────────────────────────────────── */
+/*Buttons*/
 .btn {
     display: inline-block;
     padding: .45rem 1rem;
-    background: #2c7be5;
+    background: #1a3c6e;
     color: #fff;
     border: none;
+    margin-top: 20px;
     border-radius: 4px;
     cursor: pointer;
     font-size: .9rem;
     transition: background .2s;
 }
-.btn:hover { background: #1a5bbf; text-decoration: none; color: #fff; }
+.btn:hover { background: #1e5bb7; text-decoration: none; color: #fff; }
 .btn--danger { background: #dc3545; }
 .btn--danger:hover { background: #b02a37; }
 
-/* ─── Tables ────────────────────────────────────────────────────── */
+/*Tables*/
 .data-table {
     width: 100%;
     border-collapse: collapse;
@@ -105,7 +106,7 @@ a:hover { text-decoration: underline; }
 .data-table tr:last-child td { border-bottom: none; }
 .data-table tr:hover td { background: #f8f9fa; }
 
-/* ─── Cards ─────────────────────────────────────────────────────── */
+/*Cards*/
 .info-card, .record-card, .doctor-card {
     background: #fff;
     border-radius: 6px;
@@ -121,7 +122,7 @@ a:hover { text-decoration: underline; }
     margin: 1rem 0;
 }
 
-/* ─── Forms ─────────────────────────────────────────────────────── */
+/*Forms*/
 .form-group { margin-bottom: .9rem; }
 .form-group label { display: block; font-weight: 500; margin-bottom: .3rem; }
 .form-group input, .form-group select, .form-group textarea {
@@ -137,11 +138,11 @@ a:hover { text-decoration: underline; }
     box-shadow: 0 0 0 2px rgba(44,123,229,.2);
 }
 
-/* ─── Report Sections ───────────────────────────────────────────── */
+/*Report Sections*/
 .report-section { margin: 1.5rem 0; }
 .report-section h2 { margin-bottom: .75rem; color: #1a3c6e; }
 
-/* ─── Footer ────────────────────────────────────────────────────── */
+/*Footer*/
 .site-footer {
     text-align: center;
     padding: 1rem;
@@ -151,7 +152,7 @@ a:hover { text-decoration: underline; }
     border-top: 1px solid #e0e0e0;
 }
 
-/* ─── Login Page ────────────────────────────────────────────────── */
+/*Login Page*/
 .login-page {
     max-width: 400px;
     margin: 4rem auto;

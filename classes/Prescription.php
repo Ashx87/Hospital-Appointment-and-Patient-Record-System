@@ -16,7 +16,7 @@
  *   pages/patient/my-records.php (patient views prescriptions, read-only)
  */
 
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/Database.php';
 
 class Prescription
 {

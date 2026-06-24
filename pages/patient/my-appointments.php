@@ -17,7 +17,7 @@
  */
 
 session_start();
-require_once '../../config/Database.php';
+require_once '../../classes/Database.php';
 require_once '../../classes/Auth.php';
 require_once '../../classes/Patient.php';
 require_once '../../classes/Appointment.php';

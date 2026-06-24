@@ -21,27 +21,17 @@
  *   exit;
  */
 
-/**
- * Write a flash message (displayed once on the next GET request, then automatically cleared)
- */
-function setFlash(string $type, string $message): void
-{
-    $_SESSION['flash'] = ['type' => $type, 'message' => $message];
+//Display message
+function displayFlash():void{
+    if(isset($_SESSION['flash'])){
+        $type=key($_SESSION['flash']);
+        $message=$_SESSION['flash'][$type];
+        echo"<div class='alert alert-{$type}'>".htmlspecialchars($message)."</div>";
+        unset($_SESSION['flash'][$type]);
+    }
 }
 
-/**
- * Read and output the flash message, then delete it from the session (ensures it is shown only once)
- * Called by includes/header.php at the top of <main>
- */
-function displayFlash(): void
-{
-    if (!isset($_SESSION['flash'])) {
-        return;
-    }
-    $flash = $_SESSION['flash'];
-    unset($_SESSION['flash']); // Clear immediately to prevent the message from showing again on page refresh
-
-    $type    = htmlspecialchars($flash['type']);
-    $message = htmlspecialchars($flash['message']);
-    echo "<div class=\"flash flash--{$type}\">{$message}</div>";
+//Store the message in the session
+function setFlash(string $type, string $message):void{
+    $_SESSION['flash'][$type]=$message;
 }

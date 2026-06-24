@@ -22,49 +22,76 @@ require_once __DIR__ . '/../config/Database.php';
 
 class Auth
 {
-    /**
-     * Attempt login: validate email + password; write to session on success.
-     * Returns true on success, false if credentials are wrong or account is inactive.
-     */
+    //Log in
     public static function login(string $email, string $password): bool
     {
-        // TODO: Query users table, call password_verify(), check status='active'
+        //Connect database
+        $pdo=Database::getInstance();
+        //SQL Injection
+        $stmt=$pdo->prepare("SELECT id, password, role, name, status FROM users WHERE email=?");
+        $stmt->execute([$email]);
+        $user=$stmt->fetch();
+
+        //Password security
+        if($user && password_verify($password, $user['password']) && $user['status']==='active'){
+            if(session_status()===PHP_SESSION_NONE){
+                session_start();
+            }
+            $_SESSION['user_id']=$user['id'];
+            $_SESSION['role']=$user['role'];
+            $_SESSION['name']=$user['name'];
+
+            return true;
+        }
         return false;
     }
 
-    /**
-     * Require the current user to be logged in with a matching role.
-     * $roles accepts a single string or an array of roles (supports shared pages).
-     * If not satisfied, immediately calls header() + exit without executing further page logic.
-     */
+
+    //Identity verification
     public static function requireRole(string|array $roles): void
     {
         if (!self::isLoggedIn()) {
-            header('Location: ' . BASE_URL . 'index.php');
+            header('Location: '.BASE_URL.'index.php');
             exit;
         }
         $roles = (array) $roles;
         if (!in_array($_SESSION['role'], $roles, true)) {
-            header('Location: ' . BASE_URL . 'error.php?code=403&msg=Access+Denied');
-            exit;
+            http_response_code(403);
+            die("<h1>403 Forbidden</h1>
+                 <p>You do not have the permission to access this page.</p>");
         }
     }
 
-    /** Check whether the current request is authenticated */
-    public static function isLoggedIn(): bool
+    //Session Verification
+    public static function isLoggedIn():bool
     {
-        return isset($_SESSION['user_id']);
+        if(session_status()===PHP_SESSION_NONE){
+            session_start();
+        }
+        return !empty($_SESSION['user_id']) && $_SESSION['user_id']>0;
     }
 
-    /** Return the current logged-in user ID */
-    public static function userId(): ?int
+    //Return current logged in user id
+    public static function userId():?int
     {
-        return $_SESSION['user_id'] ?? null;
+        return $_SESSION['user_id']??null;
     }
 
-    /** Return the current logged-in user role */
-    public static function role(): ?string
+    //Return current logged in user role
+    public static function role():?string
     {
-        return $_SESSION['role'] ?? null;
+        return $_SESSION['role']??null;
+    }
+
+    //Log out
+    public static function logout():void
+    {
+        if(session_status()===PHP_SESSION_NONE){
+            session_start();
+        }
+        $_SESSION=[];
+        session_destroy();
+        header('Location: '.BASE_URL.'index.php');
+        exit;
     }
 }

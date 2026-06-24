@@ -18,17 +18,27 @@ require_once 'classes/Database.php';
 require_once 'classes/Auth.php';
 require_once 'includes/flash.php';
 
-// If already logged in, redirect to role-specific dashboard
+//If already logged in, redirect to role-specific dashboard
 if (Auth::isLoggedIn()) {
     $role = $_SESSION['role'];
     header("Location: pages/{$role}/dashboard.php");
     exit;
 }
 
-// Handle login form submission
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    // TODO: Validate email / password, call Auth::login()
-    // Success → redirect; Failure → flash error and return
+//Login form
+if ($_SERVER['REQUEST_METHOD']==='POST') {
+    $email=$_POST['email']??'';
+    $password=$_POST['password']??'';
+
+    if(Auth::login($email, $password)){
+        $role=$_SESSION['role'];
+        header("Location: pages/{$role}/dashboard.php");
+        exit;
+    }else{
+        setFlash('error','Invalid email or password.');
+        header('Location: index.php');
+        exit;
+    }
 }
 
 require_once 'includes/header.php';
@@ -36,7 +46,17 @@ require_once 'includes/header.php';
 
 <main class="login-page">
     <h1>Hospital Appointment System</h1>
-    <!-- TODO: Login form HTML -->
+    <form method="POST" action="index.php">
+        <div class="form-group">
+            <label for="email">Email</label>
+            <input type="email" name="email" id="email" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password</label>
+            <input type="password" name="password" id="password" required>
+            <button type="submit" class="btn">Login</button>
+        </div>
+    </form>
 </main>
 
 <?php require_once 'includes/footer.php'; ?>

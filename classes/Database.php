@@ -16,7 +16,7 @@
  *   $stmt = $pdo->prepare("SELECT * FROM users WHERE id = ?");
  */
 
-require_once __DIR__ . '/config.php';
+require_once __DIR__ . '/../config/config.php';
 
 class Database
 {

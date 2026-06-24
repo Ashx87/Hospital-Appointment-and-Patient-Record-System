@@ -1,97 +1,68 @@
 <?php
 /**
- * classes/Auth.php — Authentication and Access Guard
+ * includes/header.php — Shared page header template
  *
  * Responsibilities:
- *   - Manage user login state (write/read/destroy $_SESSION)
- *   - Provide requireRole(): called at the top of every protected page;
- *     redirects to index.php if not logged in or role does not match
- *   - Provide isLoggedIn() and currentUser() helper methods
+ *   - Output the HTML <head> shared by all pages (CSS link, meta tags)
+ *   - Render the top navigation bar: show the current logged-in user's name and provide a logout link
+ *   - Display navigation menu items corresponding to the user's role via $_SESSION['role']
+ *   - Call displayFlash() to show one-time success/error messages
  *
- * Usage (at the top of each protected page):
- *   require_once '../../classes/Auth.php';
- *   Auth::requireRole('doctor');  // Only the doctor role can access this page
- *
- * Session structure:
- *   $_SESSION['user_id']  — users.id
- *   $_SESSION['role']     — admin | doctor | patient | receptionist
- *   $_SESSION['name']     — users.full_name (used for navigation bar display)
+ * Required via require_once in all pages; used together with includes/footer.php.
+ * session_start() must have been called before including this file (each page is responsible for that at the top).
  */
 
-require_once __DIR__ . '/Database.php';
-
-class Auth
-{
-    //Log in
-    public static function login(string $email, string $password): bool
-    {
-        //Connect database
-        $pdo=Database::getInstance();
-        //SQL Injection
-        $stmt=$pdo->prepare("SELECT id, password, role, full_name, status FROM users WHERE email=?");
-        $stmt->execute([$email]);
-        $user=$stmt->fetch();
-
-        //Password security
-        if($user && password_verify($password, $user['password']) && $user['status']==='active'){
-            if(session_status()===PHP_SESSION_NONE){
-                session_start();
-            }
-            $_SESSION['user_id']=$user['id'];
-            $_SESSION['role']=$user['role'];
-            $_SESSION['name']=$user['full_name'];
-
-            return true;
-        }
-        return false;
-    }
-
-
-    //Identity verification
-    public static function requireRole(string|array $roles): void
-    {
-        if (!self::isLoggedIn()) {
-            header('Location: '.BASE_URL.'index.php');
-            exit;
-        }
-        $roles = (array) $roles;
-        if (!in_array($_SESSION['role'], $roles, true)) {
-            http_response_code(403);
-            die("<h1>403 Forbidden</h1>
-                 <p>You do not have the permission to access this page.</p>");
-        }
-    }
-
-    //Session Verification
-    public static function isLoggedIn():bool
-    {
-        if(session_status()===PHP_SESSION_NONE){
-            session_start();
-        }
-        return !empty($_SESSION['user_id']) && $_SESSION['user_id']>0;
-    }
-
-    //Return current logged in user id
-    public static function userId():?int
-    {
-        return $_SESSION['user_id']??null;
-    }
-
-    //Return current logged in user role
-    public static function role():?string
-    {
-        return $_SESSION['role']??null;
-    }
-
-    //Log out
-    public static function logout():void
-    {
-        if(session_status()===PHP_SESSION_NONE){
-            session_start();
-        }
-        $_SESSION=[];
-        session_destroy();
-        header('Location: '.BASE_URL.'index.php');
-        exit;
-    }
+if (session_status()===PHP_SESSION_NONE) {
+    session_start();
 }
+require_once __DIR__ . '/flash.php';
+?>
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title><?=$pageTitle??'Hospital Appointment System'?></title>
+    <link rel="stylesheet" href="<?=BASE_URL?>assets/css/style.css">
+</head>
+
+<body>
+<header>
+    <nav>
+        <a href="<?=BASE_URL?>index.php" class="logo">HospitalCare</a>
+        <?php if(isset($_SESSION['user_id'])):?>
+            <ul>
+                <?php if($_SESSION['role']==='admin'): ?>
+                    <li><a href="<?=BASE_URL?>pages/admin/dashboard.php">Dashboard</a></li>
+                    <li><a href="<?=BASE_URL?>pages/admin/users.php">Users</a></li>
+                    <li><a href="<?=BASE_URL?>pages/admin/doctors.php">Doctors</a></li>
+                    <li><a href="<?=BASE_URL?>pages/admin/reports.php">Reports</a></li>
+                <?php elseif($_SESSION['role']==='doctor'): ?>
+                    <li><a href="<?=BASE_URL?>pages/doctor/dashboard.php">Dashboard</a></li>
+                    <li><a href="<?=BASE_URL?>pages/doctor/my-slots.php">My Slots</a></li>
+                    <li><a href="<?=BASE_URL?>pages/doctor/my-appointments.php">Appointments</a></li>
+                <?php elseif($_SESSION['role']==='patient'): ?>
+                    <li><a href="<?=BASE_URL?>pages/patient/dashboard.php">Dashboard</a></li>
+                    <li><a href="<?=BASE_URL?>pages/patient/find-doctor.php">Find Doctor</a></li>
+                    <li><a href="<?=BASE_URL?>pages/patient/my-appointments.php">My Appointments</a></li>
+                    <li><a href="<?=BASE_URL?>pages/patient/my-records.php">My Records</a></li>
+                <?php elseif($_SESSION['role']==='receptionist'): ?>
+                    <li><a href="<?=BASE_URL?>pages/receptionist/dashboard.php">Dashboard</a></li>
+                    <li><a href="<?=BASE_URL?>pages/receptionist/register-patient.php">Register Patient</a></li>
+                    <li><a href="<?=BASE_URL?>pages/receptionist/manage-appointments.php">Appointments</a></li>
+                <?php else:?>
+                    <li><a href="<?=BASE_URL?>index.php">Home</a></li>
+                <?php endif;?>
+            </ul>
+    
+            <div class="user-info">
+                //use htmlspecialchars() prevent special chars doesnt break the HTML
+                <span>Hello, <?= htmlspecialchars($_SESSION['name']) ?></span> |
+                <a href="<?= BASE_URL ?>logout.php">Logout</a>
+            </div>
+        <?php endif;?>
+    </nav>
+</header>
+
+<main class="container">
+    <?php displayFlash();?>

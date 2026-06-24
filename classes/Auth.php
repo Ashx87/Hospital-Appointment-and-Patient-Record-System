@@ -18,7 +18,7 @@
  *   $_SESSION['name']     — users.full_name (used for navigation bar display)
  */
 
-require_once __DIR__ . '/../config/Database.php';
+require_once __DIR__ . '/Database.php';
 
 class Auth
 {

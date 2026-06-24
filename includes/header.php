@@ -51,7 +51,7 @@ require_once __DIR__ . '/flash.php';
                     <li><a href="<?=BASE_URL?>pages/receptionist/register-patient.php">Register Patient</a></li>
                     <li><a href="<?=BASE_URL?>pages/receptionist/manage-appointments.php">Appointments</a></li>
                 <?php else:?>
-                    <li><a href="<?=BASE_url?>index.php">Home</a></li>
+                    <li><a href="<?=BASE_URL?>index.php">Home</a></li>
                 <?php endif;?>
             </ul>
     

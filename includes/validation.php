@@ -16,80 +16,65 @@
  *   - Time: HH:MM (MySQL TIME format)
  */
 
-/**
- * Sanitize a single field: trim leading/trailing whitespace and escape HTML special characters (XSS protection at the display layer)
- * SQL injection protection is handled by PDO prepared statements and does not need to be handled here
- */
-function sanitize(string $value): string
-{
-    return htmlspecialchars(trim($value), ENT_QUOTES, 'UTF-8');
+//Sanitize input
+function inputValue(string $value):string{
+    return htmlspecialchars(trim($value),ENT_QUOTES,'UTF-8');
 }
 
-/**
- * Validate the user registration/edit form
- *
- * @param array $data  Raw data from $_POST
- * @return string[]    List of error messages (empty = passed)
- */
-function validateUser(array $data): array
-{
-    $errors = [];
 
-    if (empty(trim($data['full_name'] ?? ''))) {
-        $errors[] = 'Full name is required.';
+function validateUser(array $data):array{
+    $errors=[];
+
+    //Field check for full name
+    if(empty(trim($data['full_name']??''))){
+        $errors[]='Please enter your full name.';
     }
 
-    if (empty(trim($data['email'] ?? '')) || !filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
-        $errors[] = 'A valid email address is required.';
+    //preg_match for email format
+    $emailFormat='/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/';
+    if(empty($data['email']) || !preg_match($emailFormat, $data['email'])){
+        $errors[]='Invalid email format. (E.g. example@domain.com)';
     }
 
-    // Only validate length when a new password is submitted (can be left blank during editing to mean no change)
-    if (!empty($data['password']) && strlen($data['password']) < 8) {
-        $errors[] = 'Password must be at least 8 characters.';
+    //Length validation
+    if(!empty($data['password']) && strlen($data['password'])<8){
+        $errors[]='Password must be at least 8 characters.';
     }
 
     return $errors;
 }
 
-/**
- * Validate the time slot form (used when a doctor publishes a time slot)
- * Date format: YYYY-MM-DD; time format: HH:MM
- *
- * @param array $data  Raw data from $_POST
- * @return string[]    List of error messages (empty = passed)
- */
-function validateSlot(array $data): array
-{
-    $errors = [];
+//Date format
+function validDate(array $data, string $field):array{
+    $errors=[];
+    $date=$data[$field]??'';
 
-    if (empty($data['slot_date']) || !strtotime($data['slot_date'])) {
-        $errors[] = 'A valid date is required (YYYY-MM-DD).';
-    } elseif ($data['slot_date'] < date('Y-m-d')) {
-        $errors[] = 'Slot date cannot be in the past.';
+    $dateFormat='/^\d{4}-\d{2}-\d{2}$/';
+    if(empty($date) || !preg_match($dateFormat, $date)){
+        $errors[]='Invalid date format. (E.g. YYYY-MM-DD)';
     }
-
-    if (empty($data['start_time']) || empty($data['end_time'])) {
-        $errors[] = 'Start time and end time are required.';
-    } elseif ($data['start_time'] >= $data['end_time']) {
-        $errors[] = 'End time must be after start time.';
+    if ($date<date('Y-m-d')){
+        $errors[]='Appointment date cannot be in the past.';
     }
-
     return $errors;
 }
 
-/**
- * Validate the visit note form (used when a doctor writes a diagnosis)
- *
- * @param array $data  Raw data from $_POST
- * @return string[]    List of error messages (empty = passed)
- */
-function validateVisitNote(array $data): array
-{
-    $errors = [];
+//Diagnosis and visit notes for doctors
+function validateVisitNote(array $data):array{
+    $errors=[];
 
-    if (empty(trim($data['diagnosis'] ?? ''))) {
-        $errors[] = 'Diagnosis is required.';
+    $diagnosis=trim($data['diagnosis']??'');
+    if(empty($diagnosis)){
+        $errors[]='Please enter the diagnosis.';
+    }elseif(strlen($diagnosis) > 5000){
+        $errors[]='The diagnosis is too long (max: 5000 characters).';
     }
 
+    $visit_notes=trim($data['visit_notes']??'');
+    if(empty($visit_notes)){
+        $errors[]='Please enter the visit notes.';
+    }elseif(strlen($visit_notes)>5000){
+        $errors[]='The visit notes is too long. (max: 5000 characters.)';
+    }
     return $errors;
 }

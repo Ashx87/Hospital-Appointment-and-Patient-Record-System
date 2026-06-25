@@ -24,6 +24,7 @@ require_once '../../classes/Doctor.php';
 require_once '../../classes/Slot.php';
 require_once '../../classes/Appointment.php';
 require_once '../../includes/flash.php';
+require_once '../../includes/csrf.php';
 
 Auth::requireRole('patient');
 
@@ -42,8 +43,17 @@ if (!$doctor) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrf()) {
+        setFlash('error', 'Security token mismatch. Please try again.');
+        header('Location: find-doctor.php');
+        exit;
+    }
     $slotId  = (int)$_POST['slot_id'];
     $patient = $patientModel->findByUserId(Auth::userId());
+    if (!$patient) {
+        header('Location: ../../error.php?code=403&msg=Patient+profile+not+found');
+        exit;
+    }
     // TODO: $appointmentModel->book($slotId, $patient['id'], Auth::userId());
     setFlash('success', 'Appointment booked successfully!');
     header('Location: my-appointments.php');
@@ -59,6 +69,7 @@ require_once '../../includes/header.php';
 <p><?= htmlspecialchars($doctor['department']) ?> — <?= htmlspecialchars($doctor['specialization']) ?></p>
 <!-- Date picker (TODO) -->
 <form method="POST">
+    <?= csrfField() ?>
     <input type="hidden" name="doctor_id" value="<?= $doctorId ?>">
     <!-- TODO: render list of open time slots, radio buttons to select slot_id -->
     <button type="submit" class="btn">Confirm Booking</button>

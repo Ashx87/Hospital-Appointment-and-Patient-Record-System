@@ -1,0 +1,12 @@
+# Deny all direct web access to this directory.
+# These PHP files are shared templates/helpers, included by pages via
+# require_once — they should never be requested directly through the browser.
+<IfModule mod_authz_core.c>
+    # Apache 2.4+
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    # Apache 2.2 fallback
+    Order allow,deny
+    Deny from all
+</IfModule>

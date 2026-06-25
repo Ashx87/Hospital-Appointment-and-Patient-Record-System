@@ -20,6 +20,7 @@
 
 require_once __DIR__ . '/Database.php';
 require_once __DIR__ . '/User.php';
+require_once __DIR__ . '/../includes/flash.php';   // setFlash() for the "please log in" redirect
 
 class Auth
 {
@@ -41,6 +42,9 @@ class Auth
                 return false;
             }
 
+            // Prevent session fixation: issue a fresh session ID on privilege change
+            session_regenerate_id(true);
+
             $_SESSION['user_id'] = (int) $record['id'];
             $_SESSION['role']    = $record['role'];
             $_SESSION['name']    = $record['full_name'];
@@ -59,6 +63,7 @@ class Auth
     public static function requireRole(string|array $roles): void
     {
         if (!self::isLoggedIn()) {
+            setFlash('error', 'Please log in to continue.');
             header('Location: ' . BASE_URL . 'index.php');
             exit;
         }

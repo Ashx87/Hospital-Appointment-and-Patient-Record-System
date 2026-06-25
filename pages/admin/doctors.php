@@ -25,6 +25,7 @@ require_once '../../classes/Doctor.php';
 require_once '../../classes/User.php';
 require_once '../../includes/flash.php';
 require_once '../../includes/validation.php';
+require_once '../../includes/csrf.php';
 
 Auth::requireRole('admin');
 
@@ -33,6 +34,11 @@ $userModel   = new User();
 $pageTitle   = 'Manage Doctors';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrf()) {
+        setFlash('error', 'Security token mismatch. Please try again.');
+        header('Location: doctors.php');
+        exit;
+    }
     $action = $_POST['action'] ?? '';
 
     if ($action === 'create') {
@@ -122,6 +128,7 @@ require_once '../../includes/header.php';
 <section class="info-card">
     <h2>Add New Doctor</h2>
     <form method="POST" id="create-doctor-form" novalidate>
+        <?= csrfField() ?>
         <input type="hidden" name="action" value="create">
         <div class="form-group">
             <label for="full_name">Full Name</label>
@@ -185,6 +192,7 @@ require_once '../../includes/header.php';
                         <details class="inline-edit">
                             <summary class="btn btn--small">Edit</summary>
                             <form method="POST" class="edit-form">
+                                <?= csrfField() ?>
                                 <input type="hidden" name="action" value="update">
                                 <input type="hidden" name="id" value="<?= (int) $doc['id'] ?>">
                                 <div class="form-group">
@@ -203,6 +211,7 @@ require_once '../../includes/header.php';
                             </form>
                         </details>
                         <form method="POST" class="inline-form">
+                            <?= csrfField() ?>
                             <input type="hidden" name="action" value="toggle_status">
                             <input type="hidden" name="user_id" value="<?= (int) $doc['user_id'] ?>">
                             <button type="submit" class="btn btn--small">

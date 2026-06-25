@@ -23,6 +23,7 @@ require_once '../../classes/User.php';
 require_once '../../classes/Patient.php';
 require_once '../../includes/flash.php';
 require_once '../../includes/validation.php';
+require_once '../../includes/csrf.php';
 
 Auth::requireRole('receptionist');
 
@@ -31,6 +32,11 @@ $patientModel = new Patient();
 $pageTitle    = 'Register Walk-in Patient';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrf()) {
+        setFlash('error', 'Security token mismatch. Please try again.');
+        header('Location: register-patient.php');
+        exit;
+    }
     $errors = validateUser($_POST);
     if (empty($errors)) {
         // TODO: PDO transaction → User::create() → Patient::create(userId, $_POST)
@@ -48,6 +54,7 @@ require_once '../../includes/header.php';
 ?>
 <h1>Register Walk-in Patient</h1>
 <form method="POST">
+    <?= csrfField() ?>
     <!-- TODO: patient basic info form fields (full_name, email, temp password, DOB, gender, blood_type, allergies, address) -->
     <button type="submit" class="btn">Register Patient</button>
 </form>

@@ -31,6 +31,7 @@ require_once '../../classes/Auth.php';
 require_once '../../classes/User.php';
 require_once '../../includes/flash.php';
 require_once '../../includes/validation.php';
+require_once '../../includes/csrf.php';
 
 Auth::requireRole('admin');
 
@@ -41,6 +42,11 @@ $pageTitle = 'Manage Users';
 const CREATABLE_ROLES = ['admin', 'receptionist'];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrf()) {
+        setFlash('error', 'Security token mismatch. Please try again.');
+        header('Location: users.php');
+        exit;
+    }
     $action = $_POST['action'] ?? '';
 
     if ($action === 'create') {
@@ -143,6 +149,7 @@ require_once '../../includes/header.php';
     <h2>Add New User</h2>
     <p class="form-hint">Only <strong>admin</strong> and <strong>receptionist</strong> accounts are created here. Add doctors on the <a href="doctors.php">Manage Doctors</a> page; patients are registered by the receptionist.</p>
     <form method="POST" id="create-user-form" novalidate>
+        <?= csrfField() ?>
         <input type="hidden" name="action" value="create">
         <div class="form-group">
             <label for="role">Role</label>
@@ -207,6 +214,7 @@ require_once '../../includes/header.php';
                     <td class="actions">
                         <!-- Toggle status -->
                         <form method="POST" class="inline-form">
+                            <?= csrfField() ?>
                             <input type="hidden" name="action" value="toggle_status">
                             <input type="hidden" name="id" value="<?= (int) $user['id'] ?>">
                             <button type="submit" class="btn btn--small">
@@ -217,6 +225,7 @@ require_once '../../includes/header.php';
                         <details class="inline-edit">
                             <summary class="btn btn--small">Edit</summary>
                             <form method="POST" class="edit-form">
+                                <?= csrfField() ?>
                                 <input type="hidden" name="action" value="update">
                                 <input type="hidden" name="id" value="<?= (int) $user['id'] ?>">
                                 <div class="form-group">
@@ -233,6 +242,7 @@ require_once '../../includes/header.php';
                         <!-- Delete (hard delete; JS confirm + server-side FK safety) -->
                         <?php if ((int) $user['id'] !== Auth::userId()): ?>
                         <form method="POST" class="inline-form" data-confirm="Delete this user permanently? This cannot be undone.">
+                            <?= csrfField() ?>
                             <input type="hidden" name="action" value="delete">
                             <input type="hidden" name="id" value="<?= (int) $user['id'] ?>">
                             <button type="submit" class="btn btn--danger btn--small">Delete</button>

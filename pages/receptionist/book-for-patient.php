@@ -24,6 +24,7 @@ require_once '../../classes/Doctor.php';
 require_once '../../classes/Slot.php';
 require_once '../../classes/Appointment.php';
 require_once '../../includes/flash.php';
+require_once '../../includes/csrf.php';
 
 Auth::requireRole('receptionist');
 
@@ -34,6 +35,11 @@ $appointmentModel = new Appointment();
 $pageTitle        = 'Book for Patient';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrf()) {
+        setFlash('error', 'Security token mismatch. Please try again.');
+        header('Location: book-for-patient.php');
+        exit;
+    }
     $slotId    = (int)$_POST['slot_id'];
     $patientId = (int)$_POST['patient_id'];
     // TODO: $appointmentModel->book($slotId, $patientId, Auth::userId());
@@ -55,6 +61,7 @@ require_once '../../includes/header.php';
 <!-- Step 2: select doctor (doctor_id) (TODO) -->
 <!-- Step 3: select date and time slot (TODO) -->
 <form method="POST">
+    <?= csrfField() ?>
     <input type="hidden" name="patient_id" value="<?= $patientId ?>">
     <!-- TODO: slot choice radio list -->
     <button type="submit" class="btn">Confirm Booking</button>

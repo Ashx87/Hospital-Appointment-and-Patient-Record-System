@@ -27,6 +27,7 @@ require_once '../../classes/VisitNote.php';
 require_once '../../classes/Prescription.php';
 require_once '../../includes/flash.php';
 require_once '../../includes/validation.php';
+require_once '../../includes/csrf.php';
 
 Auth::requireRole('doctor');
 
@@ -38,15 +39,28 @@ $pageTitle        = 'Write Visit Note';
 
 $appointmentId = (int)($_GET['appointment_id'] ?? $_POST['appointment_id'] ?? 0);
 $doctor        = $doctorModel->findByUserId(Auth::userId());
-$appointment   = $appointmentModel->findById($appointmentId);
 
-// Security check: only allowed to write notes for the doctor's own patients
-if (!$appointment || $appointment['doctor_id'] !== $doctor['id']) {
+// Guard: the logged-in user must have a doctor profile before doing anything
+if (!$doctor) {
+    header('Location: ../../error.php?code=403&msg=Doctor+profile+not+found');
+    exit;
+}
+
+$appointment = $appointmentModel->findById($appointmentId);
+
+// Security check: only allowed to write notes for the doctor's own patients.
+// Cast both sides — PDO returns id columns as strings, so compare same-typed.
+if (!$appointment || (int)$appointment['doctor_id'] !== (int)$doctor['id']) {
     header('Location: ../../error.php?code=403&msg=Access+Denied');
     exit;
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrf()) {
+        setFlash('error', 'Security token mismatch. Please try again.');
+        header('Location: my-appointments.php');
+        exit;
+    }
     $errors = validateVisitNote($_POST);
     if (empty($errors)) {
         // TODO: begin PDO transaction, then create visit_note + prescriptions + markCompleted in sequence
@@ -65,6 +79,7 @@ require_once '../../includes/header.php';
 <p>Date: <?= htmlspecialchars($appointment['slot_date'] ?? '') ?></p>
 
 <form method="POST">
+    <?= csrfField() ?>
     <input type="hidden" name="appointment_id" value="<?= $appointmentId ?>">
     <!-- TODO: diagnosis textarea, notes textarea, prescriptions with dynamically added rows -->
     <button type="submit">Save &amp; Complete Appointment</button>

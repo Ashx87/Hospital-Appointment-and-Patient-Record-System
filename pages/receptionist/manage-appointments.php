@@ -22,6 +22,7 @@ require_once '../../classes/Database.php';
 require_once '../../classes/Auth.php';
 require_once '../../classes/Appointment.php';
 require_once '../../includes/flash.php';
+require_once '../../includes/csrf.php';
 
 Auth::requireRole('receptionist');
 
@@ -29,6 +30,11 @@ $appointmentModel = new Appointment();
 $pageTitle        = 'Manage Appointments';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'cancel') {
+    if (!verifyCsrf()) {
+        setFlash('error', 'Security token mismatch. Please try again.');
+        header('Location: manage-appointments.php');
+        exit;
+    }
     // TODO: $appointmentModel->cancel((int)$_POST['appointment_id']);
     setFlash('success', 'Appointment cancelled and slot reopened.');
     header('Location: manage-appointments.php');
@@ -55,6 +61,7 @@ require_once '../../includes/header.php';
             <td>
                 <?php if ($appt['status'] === 'booked'): ?>
                 <form method="POST" style="display:inline">
+                    <?= csrfField() ?>
                     <input type="hidden" name="action" value="cancel">
                     <input type="hidden" name="appointment_id" value="<?= $appt['id'] ?>">
                     <button type="submit" onclick="return confirm('Cancel?')">Cancel</button>

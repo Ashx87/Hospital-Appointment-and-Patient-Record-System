@@ -28,7 +28,14 @@ $doctorModel      = new Doctor();
 $appointmentModel = new Appointment();
 $pageTitle        = 'My Appointments';
 
-$doctor     = $doctorModel->findByUserId(Auth::userId());
+$doctor = $doctorModel->findByUserId(Auth::userId());
+
+// Guard: the logged-in user must have a doctor profile
+if (!$doctor) {
+    header('Location: ../../error.php?code=403&msg=Doctor+profile+not+found');
+    exit;
+}
+
 $filterDate = $_GET['date'] ?? date('Y-m-d');
 $appts      = $appointmentModel->findByDoctor($doctor['id'], $filterDate);
 

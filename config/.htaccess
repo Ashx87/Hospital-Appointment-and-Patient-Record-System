@@ -1,0 +1,12 @@
+# Deny all direct web access to this directory.
+# config.php holds database credentials and BASE_URL — it must only ever be
+# loaded server-side via require_once, never fetched over HTTP.
+<IfModule mod_authz_core.c>
+    # Apache 2.4+
+    Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+    # Apache 2.2 fallback
+    Order allow,deny
+    Deny from all
+</IfModule>

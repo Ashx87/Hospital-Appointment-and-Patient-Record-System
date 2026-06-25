@@ -24,6 +24,7 @@ require_once '../../classes/Doctor.php';
 require_once '../../classes/Slot.php';
 require_once '../../includes/flash.php';
 require_once '../../includes/validation.php';
+require_once '../../includes/csrf.php';
 
 Auth::requireRole('doctor');
 
@@ -33,7 +34,18 @@ $pageTitle   = 'My Slots';
 
 $doctor = $doctorModel->findByUserId(Auth::userId());
 
+// Guard: the logged-in user must have a doctor profile
+if (!$doctor) {
+    header('Location: ../../error.php?code=403&msg=Doctor+profile+not+found');
+    exit;
+}
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (!verifyCsrf()) {
+        setFlash('error', 'Security token mismatch. Please try again.');
+        header('Location: my-slots.php');
+        exit;
+    }
     $action = $_POST['action'] ?? '';
     if ($action === 'create') {
         $errors = validateSlot($_POST);

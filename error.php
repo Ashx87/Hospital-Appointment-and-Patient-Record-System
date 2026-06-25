@@ -12,6 +12,7 @@
  */
 
 session_start();
+require_once 'config/config.php';   // defines BASE_URL, used by header.php (this path never loads Database.php)
 require_once 'includes/header.php';
 
 // XSS protection: escape URL parameters with htmlspecialchars

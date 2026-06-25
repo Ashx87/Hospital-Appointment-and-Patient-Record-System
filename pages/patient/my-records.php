@@ -30,7 +30,14 @@ $visitNoteModel = new VisitNote();
 $prescModel     = new Prescription();
 $pageTitle      = 'My Medical Records';
 
-$patient    = $patientModel->findByUserId(Auth::userId());
+$patient = $patientModel->findByUserId(Auth::userId());
+
+// Guard: the logged-in user must have a patient profile
+if (!$patient) {
+    header('Location: ../../error.php?code=403&msg=Patient+profile+not+found');
+    exit;
+}
+
 $visitNotes = $visitNoteModel->findByPatient($patient['id']);
 
 require_once '../../includes/header.php';

@@ -23,11 +23,11 @@
 
 //Display message
 function displayFlash():void{
-    if(isset($_SESSION['flash'])){
-        $type=key($_SESSION['flash']);
-        $message=$_SESSION['flash'][$type];
-        echo"<div class='alert alert-{$type}'>".htmlspecialchars($message)."</div>";
-        unset($_SESSION['flash'][$type]);
+    if (isset($_SESSION['flash']) && is_array($_SESSION['flash'])){
+        foreach ($_SESSION['flash'] as $type => $message) {
+            echo "<div class='alert alert-{$type}'>" . htmlspecialchars($message) . "</div>";
+        }
+        unset($_SESSION['flash']);
     }
 }
 

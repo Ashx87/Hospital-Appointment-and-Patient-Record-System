@@ -13,30 +13,36 @@ require_once 'classes/Database.php';
 require_once 'classes/Auth.php';
 require_once 'includes/flash.php';
 
-// Already logged in — send straight to their dashboard
-if (Auth::isLoggedIn()) {
-    header('Location: ' . BASE_URL . 'pages/' . $_SESSION['role'] . '/dashboard.php');
+//Logged in
+try{
+if(Auth::isLoggedIn()){
+    header('Location: '.BASE_URL.'pages/'.$_SESSION['role'].'/dashboard.php');
     exit;
 }
 
-// ── POST: Process login form submission ──────────────────────────────────────
-if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $email    = trim($_POST['email']    ?? '');
-    $password = trim($_POST['password'] ?? '');
+//Process login form submission (POST)
+if($_SERVER['REQUEST_METHOD']==='POST'){
+    $email=trim($_POST['email']??'');
+    $password=($_POST['password']??'');
 
-    if ($email === '' || $password === '') {
-        setFlash('error', 'Email and password are required.');
-        header('Location: ' . BASE_URL . 'index.php');
+    if($email===''||$password===''){
+        setFlash('error','Email and password are required.');
+        header('Location: '.BASE_URL.'index.php');
         exit;
     }
 
-    if (Auth::login($email, $password)) {
-        header('Location: ' . BASE_URL . 'pages/' . $_SESSION['role'] . '/dashboard.php');
+    if (Auth::login($email, $password)){
+        header('Location: ' .BASE_URL. 'pages/' .$_SESSION['role'].'/dashboard.php');
         exit;
     }
 
-    setFlash('error', 'Invalid email or password, or your account has been deactivated.');
-    header('Location: ' . BASE_URL . 'index.php');
+    setFlash('error','Invalid email or password.');
+    header('Location: '.BASE_URL.'index.php');
+    exit;
+}
+
+}catch(Exception $e){
+    header('Location: '.BASE_URL.'error.php?code=500&msg='.urlencode('A system error occurred. Please try again later.'));
     exit;
 }
 
@@ -65,9 +71,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 type="email"
                 id="email"
                 name="email"
-                placeholder="you@example.com"
+                placeholder="email@example.com"
                 required
-                autocomplete="email"
             >
         </div>
 
@@ -79,7 +84,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 name="password"
                 placeholder="••••••••"
                 required
-                autocomplete="current-password"
             >
         </div>
 
@@ -87,6 +91,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     </form>
 </main>
 
-<script src="<?= BASE_URL ?>assets/js/app.js"></script>
+<script src="<?=BASE_URL?>assets/js/app.js"></script>
 </body>
 </html>

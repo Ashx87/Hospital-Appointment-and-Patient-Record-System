@@ -11,19 +11,32 @@
  *   header('Location: /error.php?code=403&msg=Access+Denied');
  */
 
-session_start();
-require_once 'config/config.php';   // defines BASE_URL, used by header.php (this path never loads Database.php)
-require_once 'includes/header.php';
+require_once __DIR__ . '/includes/header.php';
 
-// XSS protection: escape URL parameters with htmlspecialchars
-$code = htmlspecialchars($_GET['code'] ?? '500');
-$msg  = htmlspecialchars($_GET['msg']  ?? 'An unexpected error occurred.');
+//Determine error type
+$errorCode=$_GET['code']??'General Error';
+$errorMessage=$_GET['msg']??'An unexpected error occurred.'
+
+//404 Not Found
+if($errorCode==='404'){
+    $errorMessage="Page Not Found.";
+}
 ?>
 
-<main class="error-page">
-    <h1>Error <?= $code ?></h1>
-    <p><?= $msg ?></p>
-    <a href="index.php">Return to Home</a>
-</main>
+//Error Container
+<section class="error-container">
+    <div class="errror-card">
+        <h1><?php echo htmlspecialchars($errorCode);?></h1>
+        <p><?php echo htmlspecialchars($errorMessage);?></p>
+        <hr>
+        <p>Would you like to try again?</p>
+        <div class="error-actions">
+            <a href="index.php" class="btn">Go Home</a>
+            <a href="javascript:history.back()" class="btn">Go Back</a>
+        </div>
+    </div>
+</section>
 
-<?php require_once 'includes/footer.php'; ?>
+<?php
+require_once __DIR__ . '/includes/header.php';
+?>

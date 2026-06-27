@@ -49,14 +49,15 @@ require_once __DIR__ . '/flash.php';
                 <?php elseif($_SESSION['role']==='receptionist'): ?>
                     <li><a href="<?=BASE_URL?>pages/receptionist/dashboard.php">Dashboard</a></li>
                     <li><a href="<?=BASE_URL?>pages/receptionist/register-patient.php">Register Patient</a></li>
-                    <li><a href="<?=BASE_URL?>pages/receptionist/manage-appointments.php">Appointments</a></li>
+                    <li><a href="<?=BASE_URL?>pages/receptionist/book-for-patient.php">Book Appointment</a></li> 
+                    <li><a href="<?=BASE_URL?>pages/receptionist/manage-appointments.php">Manage Appointments</a></li>
                 <?php else:?>
                     <li><a href="<?=BASE_URL?>index.php">Home</a></li>
                 <?php endif;?>
             </ul>
     
             <div class="user-info">
-                //use htmlspecialchars() prevent special chars doesnt break the HTML
+                <!--use htmlspecialchars() prevent special chars doesnt break the HTML-->
                 <span>Hello, <?= htmlspecialchars($_SESSION['name']) ?></span> |
                 <a href="<?= BASE_URL ?>logout.php">Logout</a>
             </div>

@@ -31,12 +31,7 @@ function scalarStat(PDO $pdo, string $sql, $fallback = 0)
     }
 }
 
-/*
-|--------------------------------------------------------------------------
-| Dashboard Statistics
-|--------------------------------------------------------------------------
-*/
-
+//Dashboard Statistics
 $todayAppointments = scalarStat(
     $pdo,
     "SELECT COUNT(*)
@@ -58,12 +53,7 @@ $totalPatients = scalarStat(
     "SELECT COUNT(*) FROM patients"
 );
 
-/*
-|--------------------------------------------------------------------------
-| Today's Appointment List
-|--------------------------------------------------------------------------
-*/
-
+//Today's Appointment List
 try{
 
     $stmt = $pdo->prepare("

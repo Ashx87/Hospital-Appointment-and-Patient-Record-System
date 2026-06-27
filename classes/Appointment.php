@@ -42,8 +42,63 @@ class Appointment
      */
     public function book(int $slotId, int $patientId, int $bookedBy): int
     {
-        // TODO: $this->pdo->beginTransaction(); ... commit/rollback
-        return 0;
+        try{
+
+            $this->pdo->beginTransaction();
+
+            $stmt = $this->pdo->prepare("
+                SELECT status
+                FROM slots
+                WHERE id = ?
+                FOR UPDATE
+            ");
+
+            $stmt->execute([$slotId]);
+
+            $slot = $stmt->fetch();
+
+            if(!$slot){
+                throw new Exception("Slot not found.");
+            }
+
+            if($slot['status'] !== 'open'){
+                throw new Exception("Selected slot is unavailable.");
+            }
+
+            $stmt = $this->pdo->prepare("
+                INSERT INTO appointments
+                (slot_id, patient_id, booked_by)
+                VALUES (?, ?, ?)
+            ");
+
+            $stmt->execute([
+                $slotId,
+                $patientId,
+                $bookedBy
+            ]);
+
+            $appointmentId = $this->pdo->lastInsertId();
+
+            $stmt = $this->pdo->prepare("
+                UPDATE slots
+                SET status='booked'
+                WHERE id=?
+            ");
+
+            $stmt->execute([$slotId]);
+
+            $this->pdo->commit();
+
+            return (int)$appointmentId;
+
+        }catch(Exception $e){
+
+            if($this->pdo->inTransaction()){
+                $this->pdo->rollBack();
+            }
+
+            throw $e;
+        }
     }
 
     /**
@@ -53,7 +108,53 @@ class Appointment
      */
     public function cancel(int $id): void
     {
-        // TODO: transaction ensures both steps succeed together, otherwise roll back
+        try {
+            $this->pdo->beginTransaction();
+
+            $stmt = $this->pdo->prepare("
+                SELECT slot_id, status
+                FROM appointments
+                WHERE id = ?
+                FOR UPDATE
+            ");
+            $stmt->execute([$id]);
+            $appointment = $stmt->fetch();
+
+            if (!$appointment) {
+                throw new Exception('Appointment not found.');
+            }
+
+            if ($appointment['status'] === 'cancelled') {
+                throw new Exception('Appointment is already cancelled.');
+            }
+
+            if ($appointment['status'] === 'completed') {
+                throw new Exception('Completed appointments cannot be cancelled.');
+            }
+
+            $stmt = $this->pdo->prepare("
+                UPDATE appointments
+                SET status = 'cancelled'
+                WHERE id = ?
+            ");
+            $stmt->execute([$id]);
+
+            $stmt = $this->pdo->prepare("
+                UPDATE slots
+                SET status = 'open'
+                WHERE id = ?
+            ");
+            $stmt->execute([(int)$appointment['slot_id']]);
+
+            $this->pdo->commit();
+
+        } catch (Exception $e) {
+            if ($this->pdo->inTransaction()) {
+                $this->pdo->rollBack();
+            }
+
+            throw $e;
+        }
     }
 
     /** Mark an appointment as completed (called after the doctor writes the visit note) */
@@ -65,16 +166,30 @@ class Appointment
     /** Find a single appointment by ID (including slot, doctor, and patient JOIN details) */
     public function findById(int $id): ?array
     {
-        // TODO: SELECT a.*, s.slot_date, s.start_time, s.end_time,
-        //       u_p.full_name AS patient_name, u_d.full_name AS doctor_name
-        //       FROM appointments a
-        //       JOIN slots s ON s.id = a.slot_id
-        //       JOIN patients p ON p.id = a.patient_id
-        //       JOIN users u_p ON u_p.id = p.user_id
-        //       JOIN doctors d ON d.id = s.doctor_id
-        //       JOIN users u_d ON u_d.id = d.user_id
-        //       WHERE a.id = ?
-        return null;
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT a.*, s.slot_date, s.start_time, s.end_time, 
+                p.id AS patient_id, d.id AS doctor_id, u_p.full_name AS patient_name, u_d.full_name AS doctor_name, u_b.full_name AS booked_by_name
+                FROM appointments a
+                JOIN slots s ON s.id = a.slot_id
+                JOIN patients p ON p.id = a.patient_id
+                JOIN users u_p ON u_p.id = p.user_id
+                JOIN doctors d ON d.id = s.doctor_id
+                JOIN users u_d ON u_d.id = d.user_id
+                JOIN users u_b ON u_b.id = a.booked_by
+                WHERE a.id = ?
+                LIMIT 1
+            ");
+
+            $stmt->execute([$id]);
+            $row = $stmt->fetch();
+
+            return $row !== false ? $row : null;
+
+        } catch (PDOException $e) {
+            error_log('Appointment::findById error: ' . $e->getMessage());
+            return null;
+        }
     }
 
     /** Get all appointments for a given patient */
@@ -94,7 +209,36 @@ class Appointment
     /** Get all appointments (for receptionist/Admin), optionally filtered by status */
     public function findAll(?string $status = null): array
     {
-        // TODO: SELECT ... [WHERE a.status = ?] ORDER BY s.slot_date DESC
-        return [];
+        try {
+            $sql = "
+                SELECT a.*, s.slot_date, s.start_time, s.end_time, 
+                p.id AS patient_id, d.id AS doctor_id, u_p.full_name AS patient_name, u_d.full_name AS doctor_name, u_b.full_name AS booked_by_name
+                FROM appointments a
+                JOIN slots s ON s.id = a.slot_id
+                JOIN patients p ON p.id = a.patient_id
+                JOIN users u_p ON u_p.id = p.user_id
+                JOIN doctors d ON d.id = s.doctor_id
+                JOIN users u_d ON u_d.id = d.user_id
+                JOIN users u_b ON u_b.id = a.booked_by
+            ";
+
+            $params = [];
+
+            if ($status !== null && $status !== '') {
+                $sql .= " WHERE a.status = ? ";
+                $params[] = $status;
+            }
+
+            $sql .= " ORDER BY s.slot_date DESC, s.start_time DESC ";
+
+            $stmt = $this->pdo->prepare($sql);
+            $stmt->execute($params);
+
+            return $stmt->fetchAll();
+
+        } catch (PDOException $e) {
+            error_log('Appointment::findAll error: ' . $e->getMessage());
+            return [];
+        }
     }
 }

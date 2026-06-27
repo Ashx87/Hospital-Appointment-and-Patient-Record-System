@@ -22,44 +22,91 @@ require_once __DIR__ . '/Database.php';
 class Patient
 {
     private PDO $pdo;
-
     public function __construct()
     {
-        $this->pdo = Database::getInstance();
+        $this->pdo=Database::getInstance();
     }
 
-    /** Find a patient profile by user_id (JOINs users to get full information) */
-    public function findByUserId(int $userId): ?array
+    //Find a patient profile by user_id
+    public function findByUserId(int $userId):?array
     {
-        // TODO: SELECT p.*, u.full_name, u.email, u.phone
-        //       FROM patients p JOIN users u ON u.id = p.user_id
-        //       WHERE p.user_id = ?
-        return null;
+        try{
+            $sql="SELECT p.*, u.full_name, u.email, u.phone
+            FROM patients p
+            JOIN users u ON u.id=p.user_id
+            WHERE p.user_id= ? LIMIT 1";
+
+            $stmt=$this->pdo->prepare($sql);
+            $stmt->execute([$userId]);
+            $row=$stmt->fetch();
+            return $row !== false ? $row:null;
+        }catch(PDOException $e){
+            header('Location: ' . BASE_URL . 'error.php?code=500&msg=' . urlencode('Failed to retrieve patient profile.'));
+            exit;
+        }
     }
 
-    /** Find a patient by patient.id */
+    //Find a patient by patient.id
     public function findById(int $id): ?array
     {
-        // TODO: SELECT p.*, u.full_name FROM patients p
-        //       JOIN users u ON u.id = p.user_id WHERE p.id = ?
-        return null;
+        try{
+            $sql="SELECT p.*, u.full_name
+            FROM patients p
+            JOIN users u ON u.id=p.user_id
+            WHERE p.id= ? LIMIT 1";
+
+            $stmt=$this->pdo->prepare($sql);
+            $stmt->execute([$id]);
+            $row=$stmt->fetch();
+            return $row !== false ? $row:null;
+        }catch(PDOException $e){
+            error_log('Patient::findById error:'.$e->getMessage());
+            return null;
+        } 
     }
 
-    /**
-     * Create a new patient profile (used by the receptionist to register a walk-in patient)
-     * A PDO transaction must be started externally; inserts into users + patients together, rolls back on failure
-     */
+    //Create a new patient profile
     public function create(int $userId, array $data): int
     {
-        // TODO: INSERT INTO patients (user_id, date_of_birth, gender, blood_type, allergies, address)
-        //       VALUES (?, ?, ?, ?, ?, ?)  returns lastInsertId()
-        return 0;
+        try {
+            $sql = "INSERT INTO patients (user_id, date_of_birth, gender, blood_type, allergies, address) 
+                    VALUES (?, ?, ?, ?, ?, ?)";
+            
+            $stmt=$this->pdo->prepare($sql);
+            $stmt->execute([
+                $userId,
+                $data['date_of_birth'],
+                $data['gender'],
+                trim($data['blood_type']),
+                trim($data['allergies']??''),
+                trim($data['address']??'')
+            ]);
+            return (int) $this->pdo->lastInsertId();
+        }catch (PDOException $e){
+            throw $e; 
+        }
     }
 
-    /** Patient updates their own profile (blood type, allergies, address, etc.) */
+    //Patient updates their own profile
     public function update(int $id, array $data): void
     {
-        // TODO: UPDATE patients SET date_of_birth=?, gender=?, blood_type=?, allergies=?, address=?
-        //       WHERE id = ?
+        try {
+            $sql = "UPDATE patients 
+                    SET date_of_birth=?, gender=?, blood_type=?, allergies=?, address=? 
+                    WHERE id=?";
+            
+            $stmt=$this->pdo->prepare($sql);
+            $stmt->execute([
+                $data['date_of_birth'],
+                $data['gender'],
+                trim($data['blood_type']),
+                trim($data['allergies']),
+                trim($data['address']),
+                $id
+            ]);
+        } catch(PDOException $e){
+            header('Location: ' . BASE_URL . 'error.php?code=500&msg=' . urlencode('Profile update failed.'));
+            exit;
+        }
     }
 }

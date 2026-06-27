@@ -33,6 +33,8 @@ class Database
                     PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
                     PDO::ATTR_EMULATE_PREPARES => false,
                 ]);
+            }
+            catch(PDOException $e){
                 header('Location: ' . BASE_URL . 'error.php?code=500&msg=' . urlencode('A database connection issue occurred.'));
                 exit;
             }

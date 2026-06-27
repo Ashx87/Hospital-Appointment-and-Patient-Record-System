@@ -68,34 +68,49 @@ $busiestDept = scalarStat(
     null
 );
 
-require_once '../../includes/header.php';
+$adminNav     = 'dashboard';
+$pageSubtitle = 'System overview at a glance';
+require_once '../../includes/admin_header.php';
 ?>
-
-<h1>Admin Dashboard</h1>
 
 <div class="stats-grid">
     <div class="info-card stat-card">
-        <span class="stat-card__value"><?= (int) $todayCount ?></span>
-        <span class="stat-card__label">Today's Appointments</span>
+        <span class="stat-card__icon"><?= adminIcon('calendar') ?></span>
+        <span class="stat-card__body">
+            <span class="stat-card__value"><?= (int) $todayCount ?></span>
+            <span class="stat-card__label">Today's Appointments</span>
+        </span>
     </div>
-    <div class="info-card stat-card">
-        <span class="stat-card__value"><?= (int) $totalPatients ?></span>
-        <span class="stat-card__label">Total Patients</span>
+    <div class="info-card stat-card stat-card--teal">
+        <span class="stat-card__icon"><?= adminIcon('patients') ?></span>
+        <span class="stat-card__body">
+            <span class="stat-card__value"><?= (int) $totalPatients ?></span>
+            <span class="stat-card__label">Total Patients</span>
+        </span>
     </div>
-    <div class="info-card stat-card">
-        <span class="stat-card__value"><?= (int) $totalDoctors ?></span>
-        <span class="stat-card__label">Active Doctors</span>
+    <div class="info-card stat-card stat-card--green">
+        <span class="stat-card__icon"><?= adminIcon('doctors') ?></span>
+        <span class="stat-card__body">
+            <span class="stat-card__value"><?= (int) $totalDoctors ?></span>
+            <span class="stat-card__label">Active Doctors</span>
+        </span>
     </div>
-    <div class="info-card stat-card">
-        <span class="stat-card__value"><?= $busiestDept !== null ? htmlspecialchars($busiestDept) : '—' ?></span>
-        <span class="stat-card__label">Busiest Department</span>
+    <div class="info-card stat-card stat-card--amber">
+        <span class="stat-card__icon"><?= adminIcon('reports') ?></span>
+        <span class="stat-card__body">
+            <span class="stat-card__value"><?= $busiestDept !== null ? htmlspecialchars($busiestDept) : '—' ?></span>
+            <span class="stat-card__label">Busiest Department</span>
+        </span>
     </div>
 </div>
 
-<div class="quick-links">
-    <a href="users.php" class="btn">Manage Users</a>
-    <a href="doctors.php" class="btn">Manage Doctors</a>
-    <a href="reports.php" class="btn">View Reports</a>
-</div>
+<section class="admin-card">
+    <h2 class="admin-card__title">Quick actions</h2>
+    <div class="quick-links">
+        <a href="users.php" class="btn"><?= adminIcon('users') ?> Manage Users</a>
+        <a href="doctors.php" class="btn btn--ghost"><?= adminIcon('doctors') ?> Manage Doctors</a>
+        <a href="reports.php" class="btn btn--ghost"><?= adminIcon('reports') ?> View Reports</a>
+    </div>
+</section>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php require_once '../../includes/admin_footer.php'; ?>

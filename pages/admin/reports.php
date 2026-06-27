@@ -113,10 +113,16 @@ try {
 
 $statusLabels = ['booked' => 'Booked', 'completed' => 'Completed', 'cancelled' => 'Cancelled'];
 
-require_once '../../includes/header.php';
-?>
+// Largest department total — used to scale the CSS bar widths (read-only, derived).
+$deptMax = !empty($deptRanking) ? max(array_map(fn($r) => (int) $r['total'], $deptRanking)) : 0;
 
-<h1>Reports</h1>
+// Colour cue per appointment status so the KPI cards read at a glance.
+$statusCardClass = ['booked' => 'stat-card--teal', 'completed' => 'stat-card--green', 'cancelled' => 'stat-card--amber'];
+
+$adminNav     = 'reports';
+$pageSubtitle = 'Operational statistics and appointment trends';
+require_once '../../includes/admin_header.php';
+?>
 
 <form method="GET" class="filter-bar report-filter">
     <div class="form-group">
@@ -127,62 +133,78 @@ require_once '../../includes/header.php';
         <label for="to">To</label>
         <input type="date" name="to" id="to" value="<?= htmlspecialchars($to) ?>">
     </div>
-    <button type="submit" class="btn">Apply</button>
+    <button type="submit" class="btn"><?= adminIcon('reports') ?> Apply</button>
 </form>
 
-<section class="report-section">
-    <h2>Today's Appointments</h2>
+<section>
+    <div class="admin-section-head"><h2>Today's appointments</h2></div>
     <div class="stats-grid">
         <?php foreach ($statusLabels as $key => $label): ?>
-        <div class="info-card stat-card">
-            <span class="stat-card__value"><?= (int) ($todayStats[$key] ?? 0) ?></span>
-            <span class="stat-card__label"><?= $label ?></span>
+        <div class="info-card stat-card <?= $statusCardClass[$key] ?? '' ?>">
+            <span class="stat-card__icon"><?= adminIcon('calendar') ?></span>
+            <span class="stat-card__body">
+                <span class="stat-card__value"><?= (int) ($todayStats[$key] ?? 0) ?></span>
+                <span class="stat-card__label"><?= $label ?></span>
+            </span>
         </div>
         <?php endforeach; ?>
         <div class="info-card stat-card">
-            <span class="stat-card__value"><?= $patientCount ?></span>
-            <span class="stat-card__label">Total Patients</span>
+            <span class="stat-card__icon"><?= adminIcon('patients') ?></span>
+            <span class="stat-card__body">
+                <span class="stat-card__value"><?= $patientCount ?></span>
+                <span class="stat-card__label">Total Patients</span>
+            </span>
         </div>
     </div>
 </section>
 
-<section class="report-section">
-    <h2>Appointments by Department <small>(<?= htmlspecialchars($from) ?> → <?= htmlspecialchars($to) ?>)</small></h2>
-    <table class="data-table">
-        <thead><tr><th>Department</th><th>Appointments</th></tr></thead>
-        <tbody>
-            <?php if (empty($deptRanking)): ?>
-                <tr><td colspan="2">No appointments in this range.</td></tr>
-            <?php else: ?>
-                <?php foreach ($deptRanking as $row): ?>
-                <tr>
-                    <td><?= htmlspecialchars($row['department']) ?></td>
-                    <td><?= (int) $row['total'] ?></td>
-                </tr>
-                <?php endforeach; ?>
-            <?php endif; ?>
-        </tbody>
-    </table>
+<section class="admin-card">
+    <div class="admin-section-head">
+        <h2>Appointments by department</h2>
+        <span class="muted"><?= htmlspecialchars($from) ?> → <?= htmlspecialchars($to) ?></span>
+    </div>
+    <?php if (empty($deptRanking)): ?>
+        <p class="form-hint">No appointments in this range.</p>
+    <?php else: ?>
+        <div class="admin-barchart" role="img"
+             aria-label="Appointment count per department for the selected range">
+            <?php foreach ($deptRanking as $row): ?>
+                <?php $pct = $deptMax > 0 ? round((int) $row['total'] / $deptMax * 100) : 0; ?>
+                <div class="admin-bar">
+                    <span class="admin-bar__label"><?= htmlspecialchars($row['department']) ?></span>
+                    <span class="admin-bar__track">
+                        <span class="admin-bar__fill" style="width: <?= $pct ?>%"></span>
+                    </span>
+                    <span class="admin-bar__value"><?= (int) $row['total'] ?></span>
+                </div>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 </section>
 
-<section class="report-section">
-    <h2>Appointments by Doctor <small>(<?= htmlspecialchars($from) ?> → <?= htmlspecialchars($to) ?>)</small></h2>
+<section>
+    <div class="admin-section-head">
+        <h2>Appointments by doctor</h2>
+        <span class="muted"><?= htmlspecialchars($from) ?> → <?= htmlspecialchars($to) ?></span>
+    </div>
+    <div class="admin-table-wrap">
     <table class="data-table">
-        <thead><tr><th>Doctor</th><th>Department</th><th>Appointments</th></tr></thead>
+        <thead><tr><th>Doctor</th><th>Department</th><th class="admin-num">Appointments</th></tr></thead>
         <tbody>
             <?php if (empty($doctorStats)): ?>
-                <tr><td colspan="3">No appointments in this range.</td></tr>
+                <tr class="admin-empty"><td colspan="3">No appointments in this range.</td></tr>
             <?php else: ?>
                 <?php foreach ($doctorStats as $row): ?>
                 <tr>
                     <td><?= htmlspecialchars($row['full_name']) ?></td>
                     <td><?= htmlspecialchars($row['department'] ?? '—') ?></td>
-                    <td><?= (int) $row['total'] ?></td>
+                    <td class="admin-num"><?= (int) $row['total'] ?></td>
                 </tr>
                 <?php endforeach; ?>
             <?php endif; ?>
         </tbody>
     </table>
+    </div><!-- .admin-table-wrap -->
 </section>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php require_once '../../includes/admin_footer.php'; ?>

@@ -120,54 +120,62 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 $doctors     = $doctorModel->findAllForAdmin();
 $departments = $doctorModel->getDepartments();
 
-require_once '../../includes/header.php';
+$adminNav     = 'doctors';
+$pageSubtitle = 'Manage doctor accounts, departments, and specializations';
+require_once '../../includes/admin_header.php';
 ?>
 
-<h1>Manage Doctors</h1>
-
-<section class="info-card">
-    <h2>Add New Doctor</h2>
+<section class="admin-card">
+    <h2 class="admin-card__title">Add new doctor</h2>
+    <p class="form-hint">Creating a doctor adds the login account and the doctor profile together in a single transaction.</p>
     <form method="POST" id="create-doctor-form" novalidate>
         <?= csrfField() ?>
         <input type="hidden" name="action" value="create">
-        <div class="form-group">
-            <label for="full_name">Full Name</label>
-            <input type="text" name="full_name" id="full_name" data-required maxlength="100">
+        <div class="admin-form-grid">
+            <div class="form-group">
+                <label for="full_name">Full Name</label>
+                <input type="text" name="full_name" id="full_name" data-required maxlength="100">
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" data-required maxlength="255">
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" name="password" id="password" data-required data-min-length="8" autocomplete="new-password">
+            </div>
+            <div class="form-group">
+                <label for="phone">Phone (optional)</label>
+                <input type="text" name="phone" id="phone" maxlength="20">
+            </div>
+            <div class="form-group">
+                <label for="department">Department</label>
+                <input type="text" name="department" id="department" data-required list="department-list" maxlength="100">
+                <datalist id="department-list">
+                    <?php foreach ($departments as $dept): ?>
+                        <option value="<?= htmlspecialchars($dept) ?>"></option>
+                    <?php endforeach; ?>
+                </datalist>
+            </div>
+            <div class="form-group">
+                <label for="specialization">Specialization (optional)</label>
+                <input type="text" name="specialization" id="specialization" maxlength="100">
+            </div>
+            <div class="form-group form-group--full">
+                <label for="bio">Bio (optional)</label>
+                <textarea name="bio" id="bio" rows="3"></textarea>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="email">Email</label>
-            <input type="email" name="email" id="email" data-required maxlength="255">
-        </div>
-        <div class="form-group">
-            <label for="password">Password</label>
-            <input type="password" name="password" id="password" data-required data-min-length="8" autocomplete="new-password">
-        </div>
-        <div class="form-group">
-            <label for="phone">Phone (optional)</label>
-            <input type="text" name="phone" id="phone" maxlength="20">
-        </div>
-        <div class="form-group">
-            <label for="department">Department</label>
-            <input type="text" name="department" id="department" data-required list="department-list" maxlength="100">
-            <datalist id="department-list">
-                <?php foreach ($departments as $dept): ?>
-                    <option value="<?= htmlspecialchars($dept) ?>"></option>
-                <?php endforeach; ?>
-            </datalist>
-        </div>
-        <div class="form-group">
-            <label for="specialization">Specialization (optional)</label>
-            <input type="text" name="specialization" id="specialization" maxlength="100">
-        </div>
-        <div class="form-group">
-            <label for="bio">Bio (optional)</label>
-            <textarea name="bio" id="bio" rows="3"></textarea>
-        </div>
-        <button type="submit" class="btn">Create Doctor</button>
+        <button type="submit" class="btn"><?= adminIcon('doctors') ?> Create Doctor</button>
     </form>
 </section>
 
-<section class="report-section">
+<section>
+    <div class="admin-section-head">
+        <h2>All doctors</h2>
+        <span class="muted"><?= count($doctors) ?> doctor<?= count($doctors) === 1 ? '' : 's' ?> shown</span>
+    </div>
+    <div class="admin-table-wrap">
     <table class="data-table">
         <thead>
             <tr>
@@ -176,7 +184,7 @@ require_once '../../includes/header.php';
         </thead>
         <tbody>
             <?php if (empty($doctors)): ?>
-                <tr><td colspan="5">No doctors found.</td></tr>
+                <tr class="admin-empty"><td colspan="5">No doctors found.</td></tr>
             <?php else: ?>
                 <?php foreach ($doctors as $doc): ?>
                 <tr>
@@ -224,6 +232,7 @@ require_once '../../includes/header.php';
             <?php endif; ?>
         </tbody>
     </table>
+    </div><!-- .admin-table-wrap -->
 </section>
 
-<?php require_once '../../includes/footer.php'; ?>
+<?php require_once '../../includes/admin_footer.php'; ?>

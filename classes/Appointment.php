@@ -67,8 +67,8 @@ class Appointment
 
             $stmt = $this->pdo->prepare("
                 INSERT INTO appointments
-                (slot_id, patient_id, booked_by)
-                VALUES (?, ?, ?)
+                (slot_id, patient_id, booked_by, status)
+                VALUES (?, ?, ?, 'booked')
             ");
 
             $stmt->execute([
@@ -187,7 +187,7 @@ class Appointment
             return $row !== false ? $row : null;
 
         } catch (PDOException $e) {
-            error_log('Appointment::findById error: ' . $e->getMessage());
+            error_log('Appointment::findById error: '.$e->getMessage());
             return null;
         }
     }
@@ -195,8 +195,24 @@ class Appointment
     /** Get all appointments for a given patient */
     public function findByPatient(int $patientId): array
     {
-        // TODO: SELECT ... WHERE a.patient_id = ? ORDER BY s.slot_date DESC
-        return [];
+        try{
+            $stmt = $this->pdo->prepare("
+                SELECT a.*, s.slot_date, s.start_time, s.end_time, u.full_name AS doctor_name
+                FROM appointments a
+                JOIN slots s ON s.id = a.slot_id
+                JOIN doctors d ON d.id = s.doctor_id
+                JOIN users u ON u.id = d.user_id
+                WHERE a.patient_id = ?
+                ORDER BY s.slot_date DESC, s.start_time DESC
+            ");
+
+            $stmt->execute([$patientId]);
+            return $stmt->fetchAll();
+        
+        } catch (PDOException $e) {
+            error_log('Appointment::findByPatient error: '.$e->getMessage());
+            return [];
+        }
     }
 
     /** Get the appointment list for a given doctor on a specific date */

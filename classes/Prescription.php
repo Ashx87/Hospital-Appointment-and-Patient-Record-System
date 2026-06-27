@@ -30,9 +30,19 @@ class Prescription
     /** Get all prescriptions for a given visit note (ordered by creation time) */
     public function findByVisitNote(int $visitNoteId): array
     {
-        // TODO: SELECT * FROM prescriptions
-        //       WHERE visit_note_id = ? ORDER BY created_at ASC
-        return [];
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT * FROM prescriptions
+                WHERE visit_note_id = ? ORDER BY created_at ASC
+            ");
+
+            $stmt->execute([$visitNoteId]);
+            return $stmt->fetchAll();
+
+        } catch (PDOException $e) {
+            error_log('Prescription::findByVisitNote error: '.$e->getMessage());
+            return [];
+        }
     }
 
     /**

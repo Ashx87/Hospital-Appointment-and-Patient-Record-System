@@ -42,14 +42,25 @@ class VisitNote
     /** Get all visit notes for a given patient (ordered by time descending) */
     public function findByPatient(int $patientId): array
     {
-        // TODO: SELECT vn.*, s.slot_date, u.full_name AS doctor_name
-        //       FROM visit_notes vn
-        //       JOIN appointments a ON a.id = vn.appointment_id
-        //       JOIN slots s ON s.id = a.slot_id
-        //       JOIN doctors d ON d.id = vn.doctor_id
-        //       JOIN users u ON u.id = d.user_id
-        //       WHERE a.patient_id = ? ORDER BY vn.visited_at DESC
-        return [];
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT vn.*, s.slot_date, u.full_name AS doctor_name
+                FROM visit_notes vn
+                JOIN appointments a ON a.id = vn.appointment_id
+                JOIN slots s ON s.id = a.slot_id
+                JOIN doctors d ON d.id = vn.doctor_id
+                JOIN users u ON u.id = d.user_id
+                WHERE a.patient_id = ?
+                ORDER BY vn.visited_at DESC
+            ");
+
+            $stmt->execute([$patientId]);
+            return $stmt->fetchAll();
+            
+        } catch (PDOException $e) {
+            error_log('VisitNote::findByPatient error: '.$e->getMessage());
+            return [];
+        }
     }
 
     /**

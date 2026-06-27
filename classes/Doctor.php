@@ -5,7 +5,7 @@
  * Responsibilities:
  *   - Encapsulate CRUD operations on the doctors table
  *   - doctors is a 1:1 extension of users (stores specialization and department info)
- *   - Provides queries for filtering doctors by department/name (used by the patient search page)
+ *   - Provides queries for filtering doctors by department, specialization or doctor name (used by the patient search page)
  *
  * doctors table fields:
  *   id, user_id(FK→users, UNIQUE), specialization(VARCHAR),
@@ -34,7 +34,20 @@ class Doctor
         // TODO: SELECT d.*, u.full_name, u.email, u.phone
         //       FROM doctors d JOIN users u ON u.id = d.user_id
         //       WHERE d.user_id = ?
-        return null;
+        try {
+            $stmt = $this->pdo->prepare(
+                'SELECT d.*, u.full_name, u.status, u.email, u.phone
+                 FROM doctors d
+                 JOIN users u ON u.id = d.user_id
+                 WHERE d.user_id = ? LIMIT 1'
+            );
+            $stmt->execute([$userId]);
+            $row = $stmt->fetch();
+            return $row !== false ? $row : null;
+        } catch (PDOException $e) {
+            error_log('Doctor::findByUserId error: ' . $e->getMessage());        
+            return null;
+        }
     }
 
     /** Find a doctor by doctor.id */
@@ -57,9 +70,9 @@ class Doctor
 
     /**
      * List all available doctors (used for patient search).
-     * Returns only ACTIVE doctors; supports filtering by department or full_name LIKE.
+     * Returns only ACTIVE doctors; supports filtering by department, specialization, full_name LIKE.
      */
-    public function findAll(?string $department = null, ?string $name = null): array
+    public function findAll(?string $department = null, ?string $specialization = null, ?string $name = null): array
     {
         try {
             $sql    = 'SELECT d.*, u.full_name FROM doctors d
@@ -67,13 +80,20 @@ class Doctor
                        WHERE u.status = \'active\'';
             $params = [];
             if ($department !== null && $department !== '') {
-                $sql      .= ' AND d.department = ?';
+                $sql .= ' AND d.department = ?';
                 $params[]  = $department;
             }
+
+            if (!empty($specialization)) {
+                $sql .= " AND d.specialization = ?";
+                $params[] = $specialization;
+            }
+
             if ($name !== null && $name !== '') {
-                $sql      .= ' AND u.full_name LIKE ?';
+                $sql .= ' AND u.full_name LIKE ?';
                 $params[]  = '%' . $name . '%';
             }
+
             $sql .= ' ORDER BY u.full_name';
             $stmt = $this->pdo->prepare($sql);
             $stmt->execute($params);
@@ -115,6 +135,24 @@ class Doctor
             return $stmt->fetchAll(PDO::FETCH_COLUMN);
         } catch (PDOException $e) {
             error_log('Doctor::getDepartments error: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+    /** Get all specialization names (used for the dropdown filter) */
+    public function getSpecializations(): array
+    {
+        try {
+            $stmt = $this->pdo->query("
+                SELECT DISTINCT specialization
+                FROM doctors
+                WHERE specialization IS NOT NULL
+                AND specialization <> ''
+                ORDER BY specialization
+            ");
+            return $stmt->fetchAll(PDO::FETCH_COLUMN);
+        } catch(PDOException $e) {
+            error_log("Doctor::getSpecializations ".$e->getMessage());
             return [];
         }
     }

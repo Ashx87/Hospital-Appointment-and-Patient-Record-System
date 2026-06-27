@@ -42,22 +42,71 @@ $appts      = $appointmentModel->findByDoctor($doctor['id'], $filterDate);
 require_once '../../includes/header.php';
 ?>
 <h1>My Appointments</h1>
-<!-- Date filter form (TODO) -->
+
+<p class="form-hint">View appointments by date and write visit notes for booked appointments.</p>
+
+<div class="info-card">
+    <form method="GET" class="filter-bar">
+        <div class="form-group">
+            <label>Date</label>
+            <input type="date" name="date" value="<?= htmlspecialchars($filterDate) ?>">
+        </div>
+
+        <button type="submit" class="btn">Filter</button>
+
+        <a href="my-appointments.php" class="btn btn--small">Today</a>
+    </form>
+</div>
+
 <table class="data-table">
-    <thead><tr><th>Time</th><th>Patient</th><th>Status</th><th>Actions</th></tr></thead>
-    <tbody>
-        <?php foreach ($appts as $appt): ?>
+    <thead>
         <tr>
-            <td><?= htmlspecialchars($appt['start_time']) ?></td>
-            <td><?= htmlspecialchars($appt['patient_name'] ?? '') ?></td>
-            <td><?= htmlspecialchars($appt['status']) ?></td>
-            <td>
-                <?php if ($appt['status'] === 'booked'): ?>
-                    <a href="write-note.php?appointment_id=<?= $appt['id'] ?>">Write Note</a>
-                <?php endif; ?>
-            </td>
+            <th>Time</th>
+            <th>Patient</th>
+            <th>Status</th>
+            <th>Actions</th>
         </tr>
-        <?php endforeach; ?>
+    </thead>
+
+    <tbody>
+        <?php if (empty($appts)): ?>
+            <tr>
+                <td colspan="4">No appointments found for this date.</td>
+            </tr>
+        <?php else: ?>
+            <?php foreach ($appts as $appt): ?>
+                <tr>
+                    <td>
+                        <?= htmlspecialchars(substr($appt['start_time'], 0, 5)) ?>
+                        <?php if (!empty($appt['end_time'])): ?>
+                            -
+                            <?= htmlspecialchars(substr($appt['end_time'], 0, 5)) ?>
+                        <?php endif; ?>
+                    </td>
+
+                    <td>
+                        <?= htmlspecialchars($appt['patient_name'] ?? '') ?>
+                    </td>
+
+                    <td>
+                        <span class="badge badge--<?= htmlspecialchars($appt['status']) ?>">
+                            <?= htmlspecialchars(ucfirst($appt['status'])) ?>
+                        </span>
+                    </td>
+
+                    <td>
+                        <?php if ($appt['status'] === 'booked'): ?>
+                            <a href="write-note.php?appointment_id=<?= (int)$appt['id'] ?>" class="btn btn--small">
+                                Write Note
+                            </a>
+                        <?php else: ?>
+                            —
+                        <?php endif; ?>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
+        <?php endif; ?>
     </tbody>
 </table>
+
 <?php require_once '../../includes/footer.php'; ?>

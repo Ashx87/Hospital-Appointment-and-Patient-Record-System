@@ -218,8 +218,49 @@ class Appointment
     /** Get the appointment list for a given doctor on a specific date */
     public function findByDoctor(int $doctorId, ?string $date = null): array
     {
-        // TODO: SELECT ... WHERE s.doctor_id = ? [AND s.slot_date = ?]
-        return [];
+        try {
+
+            $sql = "
+                SELECT a.id, a.status,
+                    s.slot_date, s.start_time, s.end_time,
+                    p.id AS patient_id, u.full_name AS patient_name
+                FROM appointments a
+                JOIN slots s
+                    ON s.id = a.slot_id
+                JOIN patients p
+                    ON p.id = a.patient_id
+                JOIN users u
+                    ON u.id = p.user_id
+                WHERE s.doctor_id = ?
+            ";
+
+            $params = [$doctorId];
+
+            if ($date !== null && $date !== '') {
+
+                $sql .= " AND s.slot_date = ?";
+
+                $params[] = $date;
+            }
+
+            $sql .= "
+                ORDER BY
+                    s.slot_date ASC,
+                    s.start_time ASC
+            ";
+
+            $stmt = $this->pdo->prepare($sql);
+
+            $stmt->execute($params);
+
+            return $stmt->fetchAll();
+
+        } catch (PDOException $e) {
+
+            error_log('Appointment::findByDoctor error: '.$e->getMessage());
+
+            return [];
+        }
     }
 
     /** Get all appointments (for receptionist/Admin), optionally filtered by status */

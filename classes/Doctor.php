@@ -31,21 +31,20 @@ class Doctor
     /** Find a doctor profile by user_id */
     public function findByUserId(int $userId): ?array
     {
-        // TODO: SELECT d.*, u.full_name, u.email, u.phone
-        //       FROM doctors d JOIN users u ON u.id = d.user_id
-        //       WHERE d.user_id = ?
         try {
             $stmt = $this->pdo->prepare(
-                'SELECT d.*, u.full_name, u.status, u.email, u.phone
-                 FROM doctors d
-                 JOIN users u ON u.id = d.user_id
-                 WHERE d.user_id = ? LIMIT 1'
+                'SELECT d.*, u.full_name, u.email, u.phone, u.status
+                FROM doctors d
+                JOIN users u ON u.id = d.user_id
+                WHERE d.user_id = ?
+                LIMIT 1'
             );
             $stmt->execute([$userId]);
             $row = $stmt->fetch();
+
             return $row !== false ? $row : null;
         } catch (PDOException $e) {
-            error_log('Doctor::findByUserId error: ' . $e->getMessage());        
+            error_log('Doctor::findByUserId error: ' . $e->getMessage());
             return null;
         }
     }

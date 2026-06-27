@@ -22,16 +22,33 @@
  */
 
 //Display message
-function displayFlash():void{
-    if (isset($_SESSION['flash']) && is_array($_SESSION['flash'])){
+function displayFlash(): void
+{
+    if (isset($_SESSION['flash']) && is_array($_SESSION['flash'])) {
+
+        $icons = [
+            'success' => '✓ ',
+            'error'   => '✕ ',
+            'warning' => '⚠ ',
+            'info'    => 'ℹ '
+        ];
+
         foreach ($_SESSION['flash'] as $type => $message) {
-            echo "<div class='alert alert-{$type}'>" . htmlspecialchars($message) . "</div>";
+            $safeType = htmlspecialchars($type);
+            $icon = $icons[$type] ?? '';
+
+            echo "<div class='flash flash--{$safeType}'>";
+            echo "<span class='flash__icon'>{$icon}</span>";
+            echo "<span class='flash__message'>" . htmlspecialchars($message) . "</span>";
+            echo "</div>";
         }
+
         unset($_SESSION['flash']);
     }
 }
 
 //Store the message in the session
-function setFlash(string $type, string $message):void{
+function setFlash(string $type, string $message):void
+{
     $_SESSION['flash'][$type]=$message;
 }

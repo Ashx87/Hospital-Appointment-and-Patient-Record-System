@@ -78,3 +78,39 @@ function validateVisitNote(array $data):array{
     }
     return $errors;
 }
+
+// Validate doctor time slot form
+function validateSlot(array $data): array
+{
+    $errors = [];
+
+    $slotDate  = trim($data['slot_date'] ?? '');
+    $startTime = trim($data['start_time'] ?? '');
+    $endTime   = trim($data['end_time'] ?? '');
+
+    if ($slotDate === '') {
+        $errors[] = 'Please select a slot date.';
+    } elseif (!preg_match('/^\d{4}-\d{2}-\d{2}$/', $slotDate)) {
+        $errors[] = 'Invalid slot date format.';
+    } elseif ($slotDate < date('Y-m-d')) {
+        $errors[] = 'Slot date cannot be in the past.';
+    }
+
+    if ($startTime === '') {
+        $errors[] = 'Please enter the start time.';
+    } elseif (!preg_match('/^\d{2}:\d{2}$/', $startTime)) {
+        $errors[] = 'Invalid start time format.';
+    }
+
+    if ($endTime === '') {
+        $errors[] = 'Please enter the end time.';
+    } elseif (!preg_match('/^\d{2}:\d{2}$/', $endTime)) {
+        $errors[] = 'Invalid end time format.';
+    }
+
+    if ($startTime !== '' && $endTime !== '' && $startTime >= $endTime) {
+        $errors[] = 'End time must be later than start time.';
+    }
+
+    return $errors;
+}

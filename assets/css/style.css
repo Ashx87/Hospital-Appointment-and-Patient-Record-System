@@ -155,17 +155,46 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 /*Login Page*/
 .login-page {
     max-width: 400px;
-    margin: 4rem auto;
-    padding: 2rem;
-    background: #fff;
+    margin: 64px auto;
+    padding: 32px;
+    background: #ffffff;
     border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0,0,0,.12);
     text-align: center;
 }
 
-/* ─── Error Page ────────────────────────────────────────────────── */
-.error-page { text-align: center; padding: 4rem 1rem; }
-.error-page h1 { font-size: 3rem; color: #dc3545; }
+/*error page*/
+.error-page{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 500px;
+    padding: 64px 16px;
+    text-align: center;
+}
+
+/*error card*/
+.error-card{
+    background-color: #ffffff;
+    padding: 48px;
+    border-radius: 8px;
+    border-top: 5px solid #dc3545;
+    max-width: 600px;
+    width: 100%;
+    margin: 0 auto;
+}
+.error-card p{
+    font-size: 1.25rem;
+    color: #4a4a4a;
+    line-height: 1.6;
+}
+
+/*Action Buttons*/
+.error-actions{
+    margin-top: 32px;
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+}
 
 /* ─── Admin: stat cards ─────────────────────────────────────────── */
 .stat-card { display: flex; flex-direction: column; gap: .25rem; text-align: center; }

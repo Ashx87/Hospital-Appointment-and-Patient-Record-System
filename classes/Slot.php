@@ -40,10 +40,19 @@ class Slot
     /** Get open time slots for a given doctor on a specific date (for the patient booking page) */
     public function findOpenByDoctor(int $doctorId, string $date): array
     {
-        // TODO: SELECT * FROM slots
-        //       WHERE doctor_id = ? AND slot_date = ? AND status = 'open'
-        //       ORDER BY start_time ASC
-        return [];
+        try {
+            $stmt = $this->pdo->prepare(
+                "SELECT * FROM slots
+                WHERE doctor_id = ? AND slot_date = ? AND status = 'open'
+                ORDER BY start_time ASC"
+            );
+            $stmt->execute([$doctorId, $date]);
+            return $stmt->fetchAll();
+
+        } catch (PDOException $e) {
+            error_log('Slot::findOpenByDoctor error: ' . $e->getMessage());
+            return [];
+        }
     }
 
     /** Find a single time slot by ID */

@@ -40,6 +40,7 @@ require_once '../../includes/header.php';
 <h2>Upcoming Appointments</h2>
 <!-- TODO: render upcoming appointments list -->
 <div class="quick-links">
+    <a href="profile.php" class="btn">My Profile</a>
     <a href="find-doctor.php" class="btn">Find a Doctor</a>
     <a href="my-appointments.php" class="btn">My Appointments</a>
     <a href="my-records.php" class="btn">My Medical Records</a>

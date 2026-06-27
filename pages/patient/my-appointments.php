@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * pages/patient/my-appointments.php — Patient appointments list page
  *
@@ -22,6 +22,7 @@ require_once '../../classes/Auth.php';
 require_once '../../classes/Patient.php';
 require_once '../../classes/Appointment.php';
 require_once '../../includes/flash.php';
+require_once '../../includes/csrf.php';
 
 Auth::requireRole('patient');
 
@@ -32,8 +33,19 @@ $pageTitle        = 'My Appointments';
 $patient = $patientModel->findByUserId(Auth::userId());
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'cancel') {
-    // TODO: $appointmentModel->cancel((int)$_POST['appointment_id']);
-    setFlash('success', 'Appointment cancelled. The slot is now available again.');
+    if (!verifyCsrf()) {
+        setFlash('error', 'Security token mismatch. Please try again.');
+        header('Location: my-appointments.php');
+        exit;
+    }
+
+    try {
+        $appointmentModel->cancel((int)$_POST['appointment_id']);
+        setFlash('success', 'Appointment cancelled. The slot is now available again.');
+    } catch (Exception $e){
+        setFlash('error', $e->getMessage());
+    }
+    
     header('Location: my-appointments.php');
     exit;
 }
@@ -55,6 +67,7 @@ require_once '../../includes/header.php';
             <td>
                 <?php if ($appt['status'] === 'booked'): ?>
                 <form method="POST">
+                    <?= csrfField() ?>
                     <input type="hidden" name="action" value="cancel">
                     <input type="hidden" name="appointment_id" value="<?= $appt['id'] ?>">
                     <button type="submit" onclick="return confirm('Cancel this appointment?')">Cancel</button>

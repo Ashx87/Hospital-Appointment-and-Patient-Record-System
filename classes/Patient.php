@@ -60,7 +60,7 @@ class Patient
             $row=$stmt->fetch();
             return $row !== false ? $row:null;
         }catch(PDOException $e){
-            error_log('Patient::findById error:'.$e->getMessage());
+            error_log('Patient::findById error: '.$e->getMessage());
             return null;
         } 
     }
@@ -77,9 +77,9 @@ class Patient
                 $userId,
                 $data['date_of_birth'],
                 $data['gender'],
-                trim($data['blood_type']),
-                trim($data['allergies']??''),
-                trim($data['address']??'')
+                !empty($data['blood_type']) ? trim($data['blood_type']) : null,
+                !empty($data['allergies']) ? trim($data['allergies']) : null,
+                !empty($data['address']) ? trim($data['address']) : null,
             ]);
             return (int) $this->pdo->lastInsertId();
         }catch (PDOException $e){
@@ -99,9 +99,9 @@ class Patient
             $stmt->execute([
                 $data['date_of_birth'],
                 $data['gender'],
-                trim($data['blood_type']),
-                trim($data['allergies']),
-                trim($data['address']),
+                !empty($data['blood_type']) ? trim($data['blood_type']) : null,
+                !empty($data['allergies']) ? trim($data['allergies']) : null,
+                !empty($data['address']) ? trim($data['address']) : null,
                 $id
             ]);
         } catch(PDOException $e){

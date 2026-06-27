@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * pages/patient/find-doctor.php — Patient search for doctor page
  *
@@ -28,15 +28,48 @@ $doctorModel = new Doctor();
 $pageTitle   = 'Find a Doctor';
 
 $filterDept = $_GET['department'] ?? null;
+$filterSpec = $_GET['specialization'] ?? null;
 $filterName = $_GET['name']       ?? null;
 
-$doctors     = $doctorModel->findAll($filterDept, $filterName);
+$doctors     = $doctorModel->findAll($filterDept, $filterSpec, $filterName);
 $departments = $doctorModel->getDepartments();
+$specializations = $doctorModel->getSpecializations();
 
 require_once '../../includes/header.php';
 ?>
 <h1>Find a Doctor</h1>
-<!-- Search filter form (department dropdown + name search box) (TODO) -->
+<form method="GET" class="filter-form">
+    <input
+        type="text"
+        id="doctorSearch"
+        name="name"
+        placeholder="Search doctor..."
+        value="<?= htmlspecialchars($filterName ?? '') ?>">
+
+    <select name="department">
+        <option value="">All Departments</option>
+        <?php foreach($departments as $dept): ?>
+            <option
+                value="<?= htmlspecialchars($dept) ?>"
+                <?= $filterDept==$dept?'selected':'' ?>>
+                <?= htmlspecialchars($dept) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+
+    <select name="specialization">
+        <option value="">All Specializations</option>
+        <?php foreach($specializations as $spec): ?>
+            <option
+                value="<?= htmlspecialchars($spec) ?>"
+                <?= $filterSpec==$spec?'selected':'' ?>>
+                <?= htmlspecialchars($spec) ?>
+            </option>
+        <?php endforeach; ?>
+    </select>
+    <button type="submit" class="btn">Filter</button>
+</form>
+
 <div class="doctor-grid">
     <?php foreach ($doctors as $doc): ?>
     <div class="doctor-card">
@@ -47,4 +80,17 @@ require_once '../../includes/header.php';
     </div>
     <?php endforeach; ?>
 </div>
+
+<script>
+    document.getElementById("doctorSearch").addEventListener("keyup", function(){
+        let keyword = this.value.toLowerCase();
+        document.querySelectorAll(".doctor-card").forEach(function(card){
+            let text = card.innerText.toLowerCase();
+            if(text.includes(keyword))
+                card.style.display="";
+            else
+                card.style.display="none";
+        });
+    });
+</script>
 <?php require_once '../../includes/footer.php'; ?>

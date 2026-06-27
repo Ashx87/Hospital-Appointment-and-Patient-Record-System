@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * pages/patient/book.php — Patient book time slot page
  *
@@ -54,8 +54,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Location: ../../error.php?code=403&msg=Patient+profile+not+found');
         exit;
     }
-    // TODO: $appointmentModel->book($slotId, $patient['id'], Auth::userId());
-    setFlash('success', 'Appointment booked successfully!');
+    try {
+        $appointmentModel->book($slotId, $patient['id'], Auth::userId());
+        setFlash('success', 'Appointment booked successfully!');
+    } catch(Exception $e){
+        setFlash('error',$e->getMessage());
+    }
     header('Location: my-appointments.php');
     exit;
 }
@@ -67,11 +71,29 @@ require_once '../../includes/header.php';
 ?>
 <h1>Book Appointment with Dr. <?= htmlspecialchars($doctor['full_name']) ?></h1>
 <p><?= htmlspecialchars($doctor['department']) ?> — <?= htmlspecialchars($doctor['specialization']) ?></p>
-<!-- Date picker (TODO) -->
+
+<form method="GET">
+    <label>Select Date:</label>
+    <input type="date" name="date" value="<?= htmlspecialchars($filterDate) ?>" min="<?= date('Y-m-d')?>">
+    <input type="hidden" name="doctor_id" value="<?= $doctorId ?>">
+    <button type="submit" class="btn">Check Slots</button>
+</form>
+
 <form method="POST">
     <?= csrfField() ?>
     <input type="hidden" name="doctor_id" value="<?= $doctorId ?>">
-    <!-- TODO: render list of open time slots, radio buttons to select slot_id -->
+    <?php if(empty($openSlots)): ?>
+        <p>No available slots for this date .</p>
+    <?php else: ?>
+    <?php foreach($openSlots as $slot): ?>
+    <div class="slot-card">
+        <label>
+            <input type="radio" name="slot_id" value="<?= $slot['id'] ?>" required>
+            <?= htmlspecialchars($slot['start_time']) ?> - <?= htmlspecialchars($slot['end_time']) ?>
+        </label>
+    </div>
+    <?php endforeach; ?>
+    <?php endif; ?>
     <button type="submit" class="btn">Confirm Booking</button>
 </form>
 <?php require_once '../../includes/footer.php'; ?>

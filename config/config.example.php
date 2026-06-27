@@ -19,4 +19,4 @@ define('DB_NAME', 'hospital_db');   // Database name created in phpMyAdmin
 define('DB_USER', 'root');          // XAMPP default user
 define('DB_PASS', '');              // XAMPP default password is empty
 
-define('BASE_URL', 'http://localhost/');  // Change to the actual subdirectory path
+define('BASE_URL', 'http://localhost/Hospital-Appointment-and-Patient-Record-System/');  // Change to the actual subdirectory path

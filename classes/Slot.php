@@ -32,9 +32,30 @@ class Slot
     /** Get all time slots for a given doctor (for the doctor management page), optionally filtered by date */
     public function findByDoctor(int $doctorId, ?string $date = null): array
     {
-        // TODO: SELECT * FROM slots WHERE doctor_id = ? [AND slot_date = ?]
-        //       ORDER BY slot_date ASC, start_time ASC
-        return [];
+        try {
+            if ($date !== null && $date !== '') {
+                $stmt = $this->pdo->prepare(
+                    'SELECT *
+                    FROM slots
+                    WHERE doctor_id = ? AND slot_date = ?
+                    ORDER BY slot_date ASC, start_time ASC'
+                );
+                $stmt->execute([$doctorId, $date]);
+            } else {
+                $stmt = $this->pdo->prepare(
+                    'SELECT *
+                    FROM slots
+                    WHERE doctor_id = ?
+                    ORDER BY slot_date ASC, start_time ASC'
+                );
+                $stmt->execute([$doctorId]);
+            }
+
+            return $stmt->fetchAll();
+        } catch (PDOException $e) {
+            error_log('Slot::findByDoctor error: ' . $e->getMessage());
+            return [];
+        }
     }
 
     /** Get open time slots for a given doctor on a specific date (for the patient booking page) */
@@ -42,13 +63,16 @@ class Slot
     {
         try {
             $stmt = $this->pdo->prepare(
-                "SELECT * FROM slots
-                WHERE doctor_id = ? AND slot_date = ? AND status = 'open'
+                "SELECT *
+                FROM slots
+                WHERE doctor_id = ?
+                AND slot_date = ?
+                AND status = 'open'
                 ORDER BY start_time ASC"
             );
             $stmt->execute([$doctorId, $date]);
-            return $stmt->fetchAll();
 
+            return $stmt->fetchAll();
         } catch (PDOException $e) {
             error_log('Slot::findOpenByDoctor error: ' . $e->getMessage());
             return [];
@@ -58,27 +82,82 @@ class Slot
     /** Find a single time slot by ID */
     public function findById(int $id): ?array
     {
-        // TODO: SELECT * FROM slots WHERE id = ?
-        return null;
+        try {
+            $stmt = $this->pdo->prepare(
+                'SELECT *
+                FROM slots
+                WHERE id = ?
+                LIMIT 1'
+            );
+            $stmt->execute([$id]);
+            $row = $stmt->fetch();
+
+            return $row !== false ? $row : null;
+        } catch (PDOException $e) {
+            error_log('Slot::findById error: ' . $e->getMessage());
+            return null;
+        }
     }
 
     /** Doctor creates a new time slot */
     public function create(int $doctorId, array $data): int
     {
-        // TODO: INSERT INTO slots (doctor_id, slot_date, start_time, end_time)
-        //       returns lastInsertId()
-        return 0;
+        try {
+            $stmt = $this->pdo->prepare(
+                'INSERT INTO slots (doctor_id, slot_date, start_time, end_time, status)
+                VALUES (?, ?, ?, ?, "open")'
+            );
+
+            $stmt->execute([
+                $doctorId,
+                $data['slot_date'],
+                $data['start_time'],
+                $data['end_time'],
+            ]);
+
+            return (int)$this->pdo->lastInsertId();
+        } catch (PDOException $e) {
+            error_log('Slot::create error: ' . $e->getMessage());
+            throw $e;
+        }
     }
 
     /** Update a time slot's status (open | booked | blocked) */
     public function updateStatus(int $id, string $status): void
     {
-        // TODO: UPDATE slots SET status = ? WHERE id = ?
+        if (!in_array($status, ['open', 'booked', 'blocked'], true)) {
+            throw new Exception('Invalid slot status.');
+        }
+
+        try {
+            $stmt = $this->pdo->prepare(
+                'UPDATE slots
+                SET status = ?
+                WHERE id = ?'
+            );
+            $stmt->execute([$status, $id]);
+        } catch (PDOException $e) {
+            error_log('Slot::updateStatus error: ' . $e->getMessage());
+            throw $e;
+        }
     }
 
     /** Delete a time slot (only allowed when status='open' and not yet booked) */
     public function delete(int $id): void
     {
-        // TODO: DELETE FROM slots WHERE id = ? AND status = 'open'
+        try {
+            $stmt = $this->pdo->prepare(
+                "DELETE FROM slots
+                WHERE id = ? AND status = 'open'"
+            );
+            $stmt->execute([$id]);
+
+            if ($stmt->rowCount() === 0) {
+                throw new Exception('Only open slots can be deleted.');
+            }
+        } catch (PDOException $e) {
+            error_log('Slot::delete error: ' . $e->getMessage());
+            throw $e;
+        }
     }
 }

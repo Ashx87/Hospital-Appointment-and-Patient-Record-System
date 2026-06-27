@@ -49,18 +49,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $action = $_POST['action'] ?? '';
     if ($action === 'create') {
         $errors = validateSlot($_POST);
+
         if (empty($errors)) {
-            // TODO: $slotModel->create($doctor['id'], $_POST);
-            setFlash('success', 'Slot created successfully.');
+            try {
+                $slotModel->create($doctor['id'], $_POST);
+                setFlash('success', 'Slot created successfully.');
+            } catch (Exception $e) {
+                setFlash('error', 'Failed to create slot.');
+            }
         } else {
             setFlash('error', implode(' ', $errors));
         }
+
     } elseif ($action === 'delete') {
-        // TODO: $slotModel->delete((int)$_POST['slot_id']);
-        setFlash('success', 'Slot deleted.');
+        try {
+            $slotModel->delete((int)$_POST['slot_id']);
+            setFlash('success', 'Slot deleted.');
+        } catch (Exception $e) {
+            setFlash('error', $e->getMessage());
+        }
+
     } elseif ($action === 'block') {
-        // TODO: $slotModel->updateStatus((int)$_POST['slot_id'], 'blocked');
-        setFlash('success', 'Slot blocked.');
+        try {
+            $slotModel->updateStatus((int)$_POST['slot_id'], 'blocked');
+            setFlash('success', 'Slot blocked.');
+        } catch (Exception $e) {
+            setFlash('error', 'Failed to block slot.');
+        }
     }
     header('Location: my-slots.php');
     exit;
@@ -72,7 +87,47 @@ $slots = $slotModel->findByDoctor($doctor['id'], $filterDate);
 require_once '../../includes/header.php';
 ?>
 <h1>My Time Slots</h1>
-<!-- Create time slot form & date filter (TODO) -->
+
+<div class="info-card">
+    <h2>Create New Slot</h2>
+
+    <form method="POST">
+        <?= csrfField() ?>
+        <input type="hidden" name="action" value="create">
+
+        <div class="form-group">
+            <label>Date</label>
+            <input type="date" name="slot_date" required>
+        </div>
+
+        <div class="form-group">
+            <label>Start Time</label>
+            <input type="time" name="start_time" required>
+        </div>
+
+        <div class="form-group">
+            <label>End Time</label>
+            <input type="time" name="end_time" required>
+        </div>
+
+        <button type="submit" class="btn">Create Slot</button>
+    </form>
+</div>
+
+<div class="info-card">
+    <h2>Filter Slots</h2>
+
+    <form method="GET" class="filter-bar">
+        <div class="form-group">
+            <label>Date</label>
+            <input type="date" name="date" value="<?= htmlspecialchars($filterDate ?? '') ?>">
+        </div>
+
+        <button type="submit" class="btn">Filter</button>
+        <a href="my-slots.php" class="btn btn--small">Reset</a>
+    </form>
+</div>
+
 <table class="data-table">
     <thead><tr><th>Date</th><th>Start</th><th>End</th><th>Status</th><th>Actions</th></tr></thead>
     <tbody>
@@ -82,7 +137,25 @@ require_once '../../includes/header.php';
             <td><?= htmlspecialchars($slot['start_time']) ?></td>
             <td><?= htmlspecialchars($slot['end_time']) ?></td>
             <td><?= htmlspecialchars($slot['status']) ?></td>
-            <td><!-- TODO: delete/block buttons --></td>
+            <td>
+                <?php if ($slot['status'] === 'open'): ?>
+                    <form method="POST" class="inline-form" onsubmit="return confirm('Block this slot?');">
+                        <?= csrfField() ?>
+                        <input type="hidden" name="action" value="block">
+                        <input type="hidden" name="slot_id" value="<?= (int)$slot['id'] ?>">
+                        <button type="submit" class="btn btn--small">Block</button>
+                    </form>
+
+                    <form method="POST" class="inline-form" onsubmit="return confirm('Delete this slot?');">
+                        <?= csrfField() ?>
+                        <input type="hidden" name="action" value="delete">
+                        <input type="hidden" name="slot_id" value="<?= (int)$slot['id'] ?>">
+                        <button type="submit" class="btn btn--small btn--danger">Delete</button>
+                    </form>
+                <?php else: ?>
+                    —
+                <?php endif; ?>
+            </td>
         </tr>
         <?php endforeach; ?>
     </tbody>

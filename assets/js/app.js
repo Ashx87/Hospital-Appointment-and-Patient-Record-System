@@ -1,4 +1,4 @@
-﻿/**
+/**
  * assets/js/app.js — Global front-end JavaScript
  *
  * Responsibilities:
@@ -12,102 +12,91 @@
  * Loaded by includes/footer.php before the </body> tag.
  */
 
-'use strict';
-
-/* ─── Flash message auto-dismiss (fade out after 3 seconds) ─────── */
-document.addEventListener('DOMContentLoaded', () => {
-    const flash = document.querySelector('.flash');
-    if (flash) {
-        setTimeout(() => {
-            flash.style.transition = 'opacity 0.5s';
-            flash.style.opacity = '0';
-            setTimeout(() => flash.remove(), 500);
+//Flash message (automatic fade after 3secs)
+document.addEventListener('DOMContentLoaded', ()=>{
+    const flash=document.querySelector('.flash');
+    if(flash){
+        setTimeout(()=>{
+            flash.style.transition='opacity 0.5s';
+            flash.style.opacity='0';
+            setTimeout(()=>flash.remove(), 500); 
         }, 3000);
     }
 });
 
-/* ─── Client-side form validation ───────────────────────────────── */
-/**
- * Attach pre-submission validation to the specified form
- * Validation rules are declared in HTML via data-required and data-min-length attributes
- */
-function initFormValidation(formId) {
-    const form = document.getElementById(formId);
-    if (!form) return;
+//Client-side form validation
+function initFormValidation(formId){
+    const form=document.getElementById(formId);
+    if(!form) return;
 
-    form.addEventListener('submit', (e) => {
-        let valid = true;
-        form.querySelectorAll('[data-required]').forEach(input => {
-            if (!input.value.trim()) {
-                showFieldError(input, input.dataset.required + ' is required.');
+    form.addEventListener('submit', (e)=>{
+        let valid=true;
+        form.querySelectorAll('[data-required]').forEach(input=>{
+            if (!input.value.trim()){
+                showFieldError(input, input.dataset.required+' is required.');
                 valid = false;
             }
         });
-        if (!valid) e.preventDefault();
+        if(!valid)e.preventDefault();
     });
 }
 
-function showFieldError(input, message) {
-    let err = input.nextElementSibling;
-    if (!err || !err.classList.contains('field-error')) {
-        err = document.createElement('span');
-        err.className = 'field-error';
-        input.insertAdjacentElement('afterend', err);
+//Create error span if it doesn't exist
+function showFieldError(input, message){
+    let error=input.nextElementSibling;
+    if (!error || !error.classList.contains('field-error')){
+        error=document.createElement('span');
+        error.className='field-error';
+        input.insertAdjacentElement('afterend', error);
     }
-    err.textContent = message;
-    input.style.borderColor = '#dc3545';
+    error.textContent=message;
+    input.style.borderColor='#dc3545';
 }
 
-/* ─── Dynamic prescription rows (used by write-note.php) ─────────── */
+/* ─── 3. Dynamic Prescription Rows (Task D5: Doctor Module) ─── */
 /**
- * Dynamically add a new prescription input group to the prescriptions container
+ * TODO: Task D5 implementation for cloning prescription template rows
+ * and appending them to the container to allow "N" prescriptions [9].
  */
 function addPrescriptionRow() {
-    // TODO: clone the prescription template row and append it to the container
+    // TODO: Implement dynamic row addition for prescriptions here.
 }
 
 function removePrescriptionRow(btn) {
-    btn.closest('.prescription-row').remove();
+    // TODO: Implement row removal logic.
 }
 
-/* ─── Live doctor search (used by find-doctor.php) ─────────────────── */
-/**
- * Instantly filter the .doctor-card list by doctor name (no server request needed)
- */
-function initDoctorSearch() {
+//Live Doctor Search
+function initDoctorSearch(){
     const input = document.getElementById('search-name');
     if (!input) return;
 
-    input.addEventListener('input', () => {
-        const query = input.value.toLowerCase();
-        document.querySelectorAll('.doctor-card').forEach(card => {
-            const name = card.querySelector('h3')?.textContent.toLowerCase() ?? '';
-            card.style.display = name.includes(query) ? '' : 'none';
+    input.addEventListener('input', ()=>{
+        const query=input.value.toLowerCase();
+        document.querySelectorAll('.doctor-card').forEach(card =>{
+            const name=card.querySelector('h3')?.textContent.toLowerCase()??'';
+            card.style.display=name.includes(query) ? '' : 'none';
         });
     });
 }
 
-/* ─── Confirm destructive actions ───────────────────────────────── */
-/**
- * Ask for confirmation before submitting any form that carries a
- * data-confirm="message" attribute (e.g. the admin "Delete user" button).
- */
-function initConfirmForms() {
-    document.querySelectorAll('form[data-confirm]').forEach(form => {
-        form.addEventListener('submit', (e) => {
-            if (!window.confirm(form.dataset.confirm)) {
+//Confirm Destructive Actions
+function initConfirmForms(){
+    document.querySelectorAll('form[data-confirm]').forEach(form=>{
+        form.addEventListener('submit', (e)=>{
+            if (!window.confirm(form.dataset.confirm)){
                 e.preventDefault();
             }
         });
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', ()=>{
     initDoctorSearch();
     initConfirmForms();
     initFormValidation('login-form');
+    initFormValidation('register-form');
     initFormValidation('slot-form');
     initFormValidation('visit-note-form');
     initFormValidation('create-user-form');
-    initFormValidation('create-doctor-form');
 });

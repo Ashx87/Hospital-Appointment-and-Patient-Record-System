@@ -33,7 +33,7 @@ $todayAppts = $appointmentModel->findByDoctor($doctor['id'], date('Y-m-d'));
 require_once '../../includes/header.php';
 ?>
 
-<h1>Welcome, Dr. <?= htmlspecialchars($_SESSION['name']) ?></h1>
+<h1>Welcome, <?= htmlspecialchars($_SESSION['name']) ?></h1>
 <br>
 <div class="dashboard-grid">
     <div class="info-card">

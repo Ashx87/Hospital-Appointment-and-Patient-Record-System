@@ -17,6 +17,7 @@
  */
 
 session_start();
+
 require_once '../../classes/Database.php';
 require_once '../../classes/Auth.php';
 require_once '../../classes/Patient.php';
@@ -32,173 +33,182 @@ $patientModel     = new Patient();
 $doctorModel      = new Doctor();
 $slotModel        = new Slot();
 $appointmentModel = new Appointment();
-$pageTitle        = 'Book for Patient';
+
+$pageTitle = 'Book for Patient';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (!verifyCsrf()) {
-
-        setFlash('error','Security token mismatch.');
-
+        setFlash('error', 'Security token mismatch. Please try again.');
         header('Location: book-for-patient.php');
-
         exit;
     }
 
-    try{
+    $slotId    = (int)($_POST['slot_id'] ?? 0);
+    $patientId = (int)($_POST['patient_id'] ?? 0);
 
+    if ($patientId <= 0 || $slotId <= 0) {
+        setFlash('error', 'Please select a patient and an available slot.');
+        header('Location: book-for-patient.php');
+        exit;
+    }
+
+    try {
         $appointmentModel->book(
-
-            (int)$_POST['slot_id'],
-
-            (int)$_POST['patient_id'],
-
-            $_SESSION['user_id']
-
+            $slotId,
+            $patientId,
+            Auth::userId()
         );
 
-        setFlash('success','Appointment booked successfully.');
-
+        setFlash('success', 'Appointment booked successfully.');
         header('Location: manage-appointments.php');
-
         exit;
 
-    }catch(Exception $e){
-
-        setFlash('error',$e->getMessage());
-
+    } catch (Exception $e) {
+        setFlash('error', $e->getMessage());
+        header('Location: book-for-patient.php?patient_id=' . $patientId);
+        exit;
     }
-
 }
 
-$doctors     = $doctorModel->findAll();
-$patientId   = (int)($_GET['patient_id'] ?? 0);
-$doctorId    = (int)($_GET['doctor_id']  ?? 0);
-$filterDate  = $_GET['date'] ?? date('Y-m-d');
-$openSlots   = $doctorId ? $slotModel->findOpenByDoctor($doctorId, $filterDate) : [];
+$patients   = $patientModel->findAll();
+$doctors    = $doctorModel->findAll();
+
+$patientId  = (int)($_GET['patient_id'] ?? 0);
+$doctorId   = (int)($_GET['doctor_id'] ?? 0);
+$filterDate = $_GET['date'] ?? date('Y-m-d');
+
+$openSlots = [];
+
+if ($doctorId > 0 && $filterDate !== '') {
+    $openSlots = $slotModel->findOpenByDoctor($doctorId, $filterDate);
+}
 
 require_once '../../includes/header.php';
 ?>
+
 <h1>Book Appointment for Patient</h1>
 
 <div class="info-card">
-
     <form method="GET">
 
-        <input type="hidden" name="patient_id" value="<?= $patientId ?>">
+        <div class="form-group">
+            <label>Patient</label>
+
+            <select name="patient_id" required>
+                <option value="">Select Patient</option>
+
+                <?php foreach ($patients as $patient): ?>
+                    <option
+                        value="<?= (int)$patient['id'] ?>"
+                        <?= $patientId === (int)$patient['id'] ? 'selected' : '' ?>>
+                        <?= htmlspecialchars($patient['full_name']) ?>
+                        (<?= htmlspecialchars($patient['email']) ?>)
+                    </option>
+                <?php endforeach; ?>
+            </select>
+        </div>
 
         <div class="form-group">
-
             <label>Doctor</label>
 
             <select name="doctor_id" required>
-
                 <option value="">Select Doctor</option>
 
-                <?php foreach($doctors as $doctor): ?>
-
+                <?php foreach ($doctors as $doctor): ?>
                     <option
-
-                        value="<?= $doctor['id'] ?>"
-
-                        <?= $doctorId==$doctor['id']?'selected':'' ?>>
-
+                        value="<?= (int)$doctor['id'] ?>"
+                        <?= $doctorId === (int)$doctor['id'] ? 'selected' : '' ?>>
                         <?= htmlspecialchars($doctor['full_name']) ?>
-
                     </option>
-
                 <?php endforeach; ?>
-
             </select>
-
         </div>
 
         <div class="form-group">
-
             <label>Date</label>
 
-            <input type="date" name="date" value="<?= htmlspecialchars($filterDate) ?>">
-
+            <input
+                type="date"
+                name="date"
+                value="<?= htmlspecialchars($filterDate) ?>"
+                required>
         </div>
 
-        <button class="btn">Search Slots</button>
+        <button type="submit" class="btn">
+            Search Slots
+        </button>
+    </form>
+</div>
+
+<?php if ($doctorId > 0 && $patientId > 0): ?>
+
+    <form method="POST">
+
+        <?= csrfField() ?>
+
+        <input
+            type="hidden"
+            name="patient_id"
+            value="<?= (int)$patientId ?>">
+
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Date</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                <?php if (empty($openSlots)): ?>
+                    <tr>
+                        <td colspan="3">No available slots.</td>
+                    </tr>
+                <?php else: ?>
+                    <?php foreach ($openSlots as $slot): ?>
+                        <tr>
+                            <td>
+                                <input
+                                    type="radio"
+                                    name="slot_id"
+                                    value="<?= (int)$slot['id'] ?>"
+                                    required>
+                            </td>
+
+                            <td>
+                                <?= htmlspecialchars($slot['slot_date']) ?>
+                            </td>
+
+                            <td>
+                                <?= htmlspecialchars(substr($slot['start_time'], 0, 5)) ?>
+                                -
+                                <?= htmlspecialchars(substr($slot['end_time'], 0, 5)) ?>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            </tbody>
+        </table>
+
+        <br>
+
+        <?php if (!empty($openSlots)): ?>
+            <button type="submit" class="btn">
+                Confirm Booking
+            </button>
+        <?php endif; ?>
 
     </form>
 
-</div>
+<?php elseif ($doctorId > 0 && $patientId <= 0): ?>
 
-<?php if($doctorId): ?>
-
-<form method="POST">
-
-    <?= csrfField() ?>
-
-    <input type="hidden" name="patient_id" value="<?= $patientId ?>">
-
-    <table class="data-table">
-
-        <thead>
-
-            <tr>
-
-                <th></th>
-
-                <th>Date</th>
-
-                <th>Time</th>
-
-            </tr>
-
-        </thead>
-
-        <tbody>
-
-        <?php if(empty($openSlots)): ?>
-
-        <tr>
-
-            <td colspan="3">No available slots.</td>
-
-        </tr>
-
-        <?php else: ?>
-
-        <?php foreach($openSlots as $slot): ?>
-
-        <tr>
-
-            <td>
-
-            <input type="radio" name="slot_id" value="<?= $slot['id'] ?>" required>
-
-            </td>
-
-            <td>
-
-            <?= htmlspecialchars($slot['slot_date']) ?>
-
-            </td>
-
-            <td>
-
-            <?= htmlspecialchars(substr($slot['start_time'],0,5)) ?>-<?= htmlspecialchars(substr($slot['end_time'],0,5)) ?>
-
-            </td>
-
-        </tr>
-
-        <?php endforeach; ?>
-
-        <?php endif; ?>
-
-        </tbody>
-
-    </table>
-
-    <br>
-
-    <button class="btn">Confirm Booking</button>
-
-</form>
+    <div class="flash flash--error">
+        <span class="flash__icon">✕</span>
+        <span class="flash__message">Please select a patient first.</span>
+    </div>
 
 <?php endif; ?>
+
+<?php require_once '../../includes/footer.php'; ?>

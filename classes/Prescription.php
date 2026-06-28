@@ -51,10 +51,26 @@ class Prescription
      */
     public function create(int $visitNoteId, array $data): int
     {
-        // TODO: INSERT INTO prescriptions
-        //       (visit_note_id, medicine_name, dosage, instructions, created_at)
-        //       VALUES (?, ?, ?, ?, NOW())  returns lastInsertId()
-        return 0;
+        try {
+            $stmt = $this->pdo->prepare("
+                INSERT INTO prescriptions
+                (visit_note_id, medicine_name, dosage, instructions, created_at)
+                VALUES (?, ?, ?, ?, NOW())
+            ");
+
+            $stmt->execute([
+                $visitNoteId,
+                trim($data['medicine_name']),
+                trim($data['dosage'] ?? ''),
+                trim($data['instructions'] ?? '')
+            ]);
+
+            return (int)$this->pdo->lastInsertId();
+
+        } catch (PDOException $e) {
+            error_log('Prescription::create error: '.$e->getMessage());
+            throw $e;
+        }
     }
 
     /** Delete a prescription (used by the doctor to correct entries before submitting) */

@@ -54,8 +54,7 @@ class User
             ]);
             return (int) $this->pdo->lastInsertId();
         } catch (PDOException $e) {
-            header('Location: ' . BASE_URL . 'error.php?code=500&msg=' . urlencode('Registration failed: Email may already exist.'));
-            exit;
+            throw $e;
         }
     }
 

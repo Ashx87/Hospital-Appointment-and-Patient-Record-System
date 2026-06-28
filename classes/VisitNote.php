@@ -32,11 +32,25 @@ class VisitNote
     /** Find a visit note by appointment ID */
     public function findByAppointment(int $appointmentId): ?array
     {
-        // TODO: SELECT vn.*, u.full_name AS doctor_name
-        //       FROM visit_notes vn JOIN doctors d ON d.id = vn.doctor_id
-        //       JOIN users u ON u.id = d.user_id
-        //       WHERE vn.appointment_id = ?
-        return null;
+        try {
+            $stmt = $this->pdo->prepare("
+                SELECT vn.*, u.full_name AS doctor_name
+                FROM visit_notes vn
+                JOIN doctors d ON d.id = vn.doctor_id
+                JOIN users u ON u.id = d.user_id
+                WHERE vn.appointment_id = ?
+                LIMIT 1
+            ");
+
+            $stmt->execute([$appointmentId]);
+            $row = $stmt->fetch();
+
+            return $row !== false ? $row : null;
+
+        } catch (PDOException $e) {
+            error_log('VisitNote::findByAppointment error: '.$e->getMessage());
+            return null;
+        }
     }
 
     /** Get all visit notes for a given patient (ordered by time descending) */
@@ -69,9 +83,26 @@ class VisitNote
      */
     public function create(int $appointmentId, int $doctorId, array $data): int
     {
-        // TODO: INSERT INTO visit_notes (appointment_id, doctor_id, diagnosis, notes, visited_at)
-        //       VALUES (?, ?, ?, ?, NOW())  returns lastInsertId()
-        return 0;
+        try {
+            $stmt = $this->pdo->prepare("
+                INSERT INTO visit_notes
+                (appointment_id, doctor_id, diagnosis, notes, visited_at)
+                VALUES (?, ?, ?, ?, NOW())
+            ");
+
+            $stmt->execute([
+                $appointmentId,
+                $doctorId,
+                trim($data['diagnosis']),
+                trim($data['visit_notes'] ?? '')
+            ]);
+
+            return (int)$this->pdo->lastInsertId();
+
+        } catch (PDOException $e) {
+            error_log('VisitNote::create error: '.$e->getMessage());
+            throw $e;
+        }
     }
 
     /** Doctor updates the content of a visit note */

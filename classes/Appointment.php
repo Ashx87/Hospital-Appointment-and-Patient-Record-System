@@ -160,7 +160,24 @@ class Appointment
     /** Mark an appointment as completed (called after the doctor writes the visit note) */
     public function markCompleted(int $id): void
     {
-        // TODO: UPDATE appointments SET status='completed' WHERE id = ?
+        try {
+            $stmt = $this->pdo->prepare("
+                UPDATE appointments
+                SET status = 'completed'
+                WHERE id = ?
+                AND status = 'booked'
+            ");
+
+            $stmt->execute([$id]);
+
+            if ($stmt->rowCount() === 0) {
+                throw new Exception('Only booked appointments can be marked as completed.');
+            }
+
+        } catch (PDOException $e) {
+            error_log('Appointment::markCompleted error: '.$e->getMessage());
+            throw $e;
+        }
     }
 
     /** Find a single appointment by ID (including slot, doctor, and patient JOIN details) */

@@ -65,6 +65,30 @@ class Patient
         } 
     }
 
+    public function findAll(): array
+    {
+        try {
+            $stmt = $this->pdo->query("
+                SELECT
+                    p.id,
+                    p.user_id,
+                    u.full_name,
+                    u.email,
+                    u.phone
+                FROM patients p
+                JOIN users u ON u.id = p.user_id
+                WHERE u.status = 'active'
+                ORDER BY u.full_name
+            ");
+
+            return $stmt->fetchAll();
+
+        } catch (PDOException $e) {
+            error_log('Patient::findAll error: '.$e->getMessage());
+            return [];
+        }
+    }
+
     //Create a new patient profile
     public function create(int $userId, array $data): int
     {

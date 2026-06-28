@@ -65,12 +65,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             error_log($e->getMessage());
 
-            setFlash('error', 'Registration failed. Please try again.');
+            if ($e instanceof PDOException && $e->getCode() === '23000') {
+                setFlash('error', 'Registration failed. This email is already registered.');
+            } else {
+                setFlash('error', 'Registration failed. Please try again.');
+            }
+
+            header('Location: register-patient.php');
+            exit;
         }
 
     } else {
 
-        setFlash('error', implode('<br>', $errors));
+        setFlash('error', implode(' ', $errors));
 
     }
 }

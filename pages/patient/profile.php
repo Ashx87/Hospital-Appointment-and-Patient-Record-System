@@ -20,6 +20,7 @@ require_once '../../classes/Database.php';
 require_once '../../classes/Auth.php';
 require_once '../../classes/Patient.php';
 require_once '../../includes/flash.php';
+require_once '../../includes/csrf.php';
 
 Auth::requireRole('patient');
 
@@ -52,7 +53,17 @@ require_once '../../includes/header.php';
 ?>
 
 <h1>My Profile</h1>
+<br>
 <form method="POST">
+    <?= csrfField() ?>
+    <div class="form-group">
+        <label>Name</label>
+        <input 
+            type="text"
+            value="<?= htmlspecialchars($patient['full_name']) ?>"
+            disabled>
+    </div>
+
     <div class="form-group">
         <label for="date_of_birth">Date of Birth</label>
         <input

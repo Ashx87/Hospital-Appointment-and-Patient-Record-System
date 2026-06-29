@@ -23,6 +23,21 @@ require_once '../../classes/VisitNote.php';
 require_once '../../classes/Prescription.php';
 require_once '../../includes/flash.php';
 
+function patientRecordIcon(string $name): string
+{
+    $icons = [
+'record' => '
+<rect x="4" y="3" width="16" height="19" rx="2"/>
+<path d="M9 2h6v4H9z"/>
+<path d="M12 10v6M9 13h6"/>
+',        'details' => '<path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/>'
+    ];
+    $inner = $icons[$name] ?? '';
+    return '<svg class="patient-record-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
+            .'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+            .$inner.'</svg>';
+}
+
 Auth::requireRole('patient');
 
 $patientModel   = new Patient();
@@ -42,25 +57,63 @@ $visitNotes = $visitNoteModel->findByPatient($patient['id']);
 
 require_once '../../includes/header.php';
 ?>
-<h1>My Medical Records</h1>
+
+<h1 class="patient-page-title"><?= patientRecordIcon('record') ?> My Medical Records</h1>
+<p class="form-hint">View your previous consultation details, diagnosis, doctor's notes, and prescribed medications.</p>
+<br>
 <?php if (empty($visitNotes)): ?>
-    <p>No visit records found.</p>
+    <p class="patient-empty">No visit records found.</p>
 <?php else: ?>
     <?php foreach ($visitNotes as $note): ?>
-    <div class="record-card">
-        <h3>Visit on <?= htmlspecialchars($note['slot_date'] ?? '') ?> — Dr. <?= htmlspecialchars($note['doctor_name'] ?? '') ?></h3>
-        <p><strong>Diagnosis:</strong> <?= htmlspecialchars($note['diagnosis']) ?></p>
-        <p><strong>Notes:</strong> <?= htmlspecialchars($note['notes'] ?? '') ?></p>
+        <div class="patient-record-card">
+
+            <div class="patient-record-header">
+                <h3 class="patient-record-title"><?= patientRecordIcon('details') ?>
+                    Consultation Details
+                </h3>
+            </div>
+
+            <div class="patient-info-grid">
+                <p><strong>Date</strong><br>
+                    <?= htmlspecialchars($note['slot_date'] ?? '') ?>
+                </p>
+
+                <p><strong>Doctor</strong><br>
+                    Dr. <?= htmlspecialchars($note['doctor_name'] ?? '') ?>
+                </p>
+            </div>
+
+            <div class="patient-section">
+                <h4>Diagnosis</h4>
+                <div class="patient-detail-box"><?= htmlspecialchars($note['diagnosis']) ?></div>
+            </div>
+
+            <div class="patient-section">
+                <h4>Doctor's Notes</h4>
+                <div class="patient-detail-box"><?= htmlspecialchars($note['notes'] ?? 'No notes provided.') ?></div>
+            </div>
+
         <?php $prescriptions = $prescModel->findByVisitNote($note['id']); ?>
         <?php if (!empty($prescriptions)): ?>
-        <h4>Prescriptions</h4>
-        <ul>
-            <?php foreach ($prescriptions as $rx): ?>
-            <li><?= htmlspecialchars($rx['medicine_name']) ?> — <?= htmlspecialchars($rx['dosage']) ?>: <?= htmlspecialchars($rx['instructions'] ?? '') ?></li>
-            <?php endforeach; ?>
-        </ul>
-        <?php endif; ?>
-    </div>
+
+            <div class="patient-section">
+                <h4>Prescription</h4>
+
+                <div class="patient-prescription">
+                    <?php foreach ($prescriptions as $rx): ?>
+                        <div class="patient-medicine">
+                            <strong><?= htmlspecialchars($rx['medicine_name']) ?></strong>
+                            <br>
+                            <span>Dosage: <?= htmlspecialchars($rx['dosage']) ?></span>
+                            <br>
+                            <span>Instructions: <?= htmlspecialchars($rx['instructions'] ?? 'Follow doctor instructions.') ?></span>
+                        </div>
+                    <?php endforeach; ?>
+                    </div>
+                </div>
+            <?php endif; ?>
+        </div>
     <?php endforeach; ?>
 <?php endif; ?>
+
 <?php require_once '../../includes/footer.php'; ?>

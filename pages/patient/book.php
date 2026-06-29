@@ -26,6 +26,20 @@ require_once '../../classes/Appointment.php';
 require_once '../../includes/flash.php';
 require_once '../../includes/csrf.php';
 
+function bookingIcon(string $name): string
+{
+    $icons = [
+        'clock' => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',        
+        'calendar' => '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+        'search' => '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+        'check' => '<polyline points="20 6 9 17 4 12"/>'
+    ];
+    $inner = $icons[$name] ?? '';
+    return '<svg class="patient-icon" viewBox="0 0 24 24" fill="none" 
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+            .$inner.'</svg>';
+}
+
 Auth::requireRole('patient');
 
 $patientModel     = new Patient();
@@ -69,31 +83,60 @@ $openSlots  = $slotModel->findOpenByDoctor($doctorId, $filterDate);
 
 require_once '../../includes/header.php';
 ?>
-<h1>Book Appointment with Dr. <?= htmlspecialchars($doctor['full_name']) ?></h1>
-<p><?= htmlspecialchars($doctor['department']) ?> — <?= htmlspecialchars($doctor['specialization']) ?></p>
+<h1 class="patient-page-title"><?= bookingIcon('clock') ?>
+    Book Appointment with Dr. <?= htmlspecialchars(str_replace('Dr. ', '', $doctor['full_name'])) ?>
+</h1>
+<p class="form-hint">Find your preferred appointment time.</p>
 
-<form method="GET">
-    <label>Select Date:</label>
-    <input type="date" name="date" value="<?= htmlspecialchars($filterDate) ?>" min="<?= date('Y-m-d')?>">
-    <input type="hidden" name="doctor_id" value="<?= $doctorId ?>">
-    <button type="submit" class="btn">Check Slots</button>
-</form>
+<div class="booking-doctor-card">
+    <h3>Doctor Information</h3>
+    <table class="booking-doctor-table">
+        <tr>
+            <td><strong>Name</strong></td>
+            <td>Dr. <?= htmlspecialchars(str_replace('Dr. ', '', $doctor['full_name'])) ?></td>
+        </tr>
+
+        <tr>
+            <td><strong>Department</strong></td>
+            <td><?= htmlspecialchars($doctor['department']) ?></td>
+        </tr>
+
+        <tr>
+            <td><strong>Specialization</strong></td>
+            <td><?= htmlspecialchars($doctor['specialization']) ?></td>
+        </tr>
+    </table>
+</div>
+
+<div class="booking-section">
+    <h2>Select Appointment Date</h2>
+    <form method="GET" class="booking-date-form">
+        <input type="date" name="date" value="<?= htmlspecialchars($filterDate) ?>" min="<?= date('Y-m-d')?>">
+        <input type="hidden" name="doctor_id" value="<?= $doctorId ?>">
+        <button type="submit" class="btn booking-check-btn"><?= bookingIcon('search') ?>View Available Slots</button>
+    </form>
+</div>
 
 <form method="POST">
     <?= csrfField() ?>
     <input type="hidden" name="doctor_id" value="<?= $doctorId ?>">
     <?php if(empty($openSlots)): ?>
-        <p>No available slots for this date .</p>
+        <div class="booking-empty">
+            No appointment slots are available for the selected date.<br>
+            Please choose another date.
+        </div>
     <?php else: ?>
-    <?php foreach($openSlots as $slot): ?>
-    <div class="slot-card">
-        <label>
-            <input type="radio" name="slot_id" value="<?= $slot['id'] ?>" required>
-            <?= htmlspecialchars($slot['start_time']) ?> - <?= htmlspecialchars($slot['end_time']) ?>
-        </label>
-    </div>
-    <?php endforeach; ?>
+        <?php foreach($openSlots as $slot): ?>
+            <div class="slot-card">
+                <label>
+                    <input type="radio" name="slot_id" value="<?= $slot['id'] ?>" required>
+                    <span><?= htmlspecialchars($slot['start_time']) ?> - <?= htmlspecialchars($slot['end_time']) ?></span>
+                </label>
+            </div>
+        <?php endforeach; ?>
     <?php endif; ?>
-    <button type="submit" class="btn">Confirm Booking</button>
+    
+    <button type="submit" class="btn confirm-booking-btn"><?= bookingIcon('check') ?>Confirm Booking</button>
 </form>
+
 <?php require_once '../../includes/footer.php'; ?>

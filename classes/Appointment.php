@@ -232,6 +232,47 @@ class Appointment
         }
     }
 
+
+    /** Get upcoming booked appointments for dashboard (only returns: status = booked */
+    public function findUpcomingByPatient(int $patientId): array
+    {
+        try {
+
+            $stmt = $this->pdo->prepare("
+                SELECT 
+                    a.*,
+                    s.slot_date,
+                    s.start_time,
+                    s.end_time,
+                    u.full_name AS doctor_name
+                FROM appointments a
+                JOIN slots s 
+                    ON s.id = a.slot_id
+                JOIN doctors d 
+                    ON d.id = s.doctor_id
+                JOIN users u 
+                    ON u.id = d.user_id
+                WHERE a.patient_id = ?
+                AND a.status = 'booked'
+                AND s.slot_date >= CURDATE()
+                ORDER BY 
+                    s.slot_date ASC,
+                    s.start_time ASC
+            ");
+
+            $stmt->execute([$patientId]);
+
+            return $stmt->fetchAll();
+
+        } catch (PDOException $e) {
+
+            error_log('Appointment::findUpcomingByPatient error: '.$e->getMessage());
+
+            return [];
+        }
+    }
+
+
     /** Get the appointment list for a given doctor on a specific date */
     public function findByDoctor(int $doctorId, ?string $date = null): array
     {

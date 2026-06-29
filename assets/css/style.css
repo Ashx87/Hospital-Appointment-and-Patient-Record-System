@@ -592,3 +592,175 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 @media (prefers-reduced-motion: reduce) {
     .admin-body * { transition: none !important; }
 }
+
+/* ════════════════════════════════════════════════════════════════════
+   PATIENT
+   ════════════════════════════════════════════════════════════════════ */
+.patient-icon{ width:20px; height:20px; }
+.patient-page-title{ color:#40454d; display:flex; align-items:center; gap:8px; }
+.patient-page-title .patient-icon, .patient-page-title .patient-record-icon{ width:26px; height:26px; }
+
+/* =====================================================
+   DASHBOARD
+===================================================== */
+.patient-dashboard .patient-page-title .patient-icon{ width:30px; height:30px; }
+.patient-dashboard .patient-page-title{ margin-bottom:30px; }
+.patient-detail{ margin-bottom:15px; background:#fff; padding:20px; border-radius:12px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08); transition:.2s ease;}
+.patient-detail span{ display:block; color:#777; font-size:.9rem; margin-bottom:4px; }
+.patient-detail strong{ display:block; color:#1a3c6e; font-size:1.3rem; }
+.patient-detail:hover{ transform:translateY(-3px); box-shadow:0 8px 18px rgba(0,0,0,.12); }
+.patient-dashboard .dashboard-grid{ display:grid; grid-template-columns:repeat(2,minmax(220px,1fr));
+    gap:20px; margin-bottom:35px; }
+.patient-dashboard h2{ margin:35px 0 15px; color:#1a3c6e; }
+
+.appointment-summary-card{ text-align:center; margin-bottom:35px; }
+.appointment-summary-card .patient-icon{ width:45px; height:45px; color:#1a3c6e; margin-bottom:10px; }
+.appointment-summary-card h1{ margin:5px 0; }
+
+.quick-links{ display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:20px; }
+.quick-action-card{ background:#fff; min-height:100px; padding:22px 25px; border-radius:12px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08); display:flex; align-items:center; gap:18px;
+    color:#40454d;text-decoration:none; transition:.25s ease; }
+.quick-action-card:hover{ transform:scale(1.02); box-shadow:0 8px 18px rgba(0,0,0,.12); text-decoration:none; }
+.quick-action-card .patient-icon{ width:42px; height:42px; color:#1a3c6e; flex-shrink:0; }
+.quick-action-card strong{ display:block; font-size:1.05rem; margin-bottom:2px; }
+.quick-action-card span{ display:block; margin-top:0; line-height:1.4; color:#777; font-size:.85rem; }
+.quick-action-container{ margin-top:40px; }
+
+/* =====================================================
+   Profile
+===================================================== */
+.patient-profile .btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    min-width:200px; height:46px; padding:0 22px; border-radius:15px; font-size:1rem; font-weight:500;
+    transition:all .2s ease; }
+.patient-profile .btn:hover{ transform:translateY(-2px); box-shadow:0 4px 10px rgba(0,0,0,.15); }
+.patient-form input, .patient-profile select, .patient-profile textarea {
+    border-radius: 8px; border: 1px solid #ccc; padding: 10px 12px; font-size: 1rem; transition: all 0.2s ease; }
+.patient-form input:focus, .patient-profile select:focus, .patient-profile textarea:focus {
+    outline: none; border-color: #1a3c6e; box-shadow: 0 0 5px rgba(26,60,110,0.25); }
+.patient-form textarea { resize: vertical; min-height: 90px; }
+
+/* =====================================================
+   MY MEDICAL RECORDS PAGE
+===================================================== */
+.patient-record-card { background:#fff; border-radius:12px; padding:22px; margin-bottom:20px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08); transition:.2s ease; }
+.patient-record-card:hover { transform:translateY(-3px); box-shadow:0 8px 18px rgba(0,0,0,.12); }
+
+.patient-record-header { display:flex; align-items:center; margin-bottom:18px; padding-bottom:12px;
+    border-bottom:1px solid #eee; }
+.patient-record-title { display:flex; align-items:center; gap:8px; color:#40454d; }
+.patient-record-icon { width:22px; height:22px; }
+
+.patient-info-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:16px; margin:15px 0; }
+.patient-info-grid p { background:#f8fafc; padding:12px 15px; border-radius:10px; }
+
+.patient-section { margin-top:20px; }
+.patient-section h4 { margin-bottom:8px; }
+.patient-detail-box { background:#eff6fd; padding:15px; border-radius:10px; line-height:1.6; }
+
+.patient-section h4 svg { vertical-align:middle; }
+.patient-prescription { display:grid; gap:12px; }
+.patient-medicine { background:#faf7ed; border-bottom:4px solid #edd693; padding:15px; border-radius:10px; }
+.patient-medicine strong { color:#3e3f3e; }
+
+.patient-empty { background:#fff; padding:20px; border-radius:10px; }
+
+/* =====================================================
+   FIND DOCTOR PAGE
+===================================================== */
+.doctor-filter-box{ background:#fff; padding:22px; border-radius:12px; box-shadow:0 3px 10px rgba(0,0,0,.08);
+    margin-bottom:25px; }
+
+/* Form */
+.filter-form{ display:flex; align-items:flex-end; gap:15px; flex-wrap:wrap; }
+.filter-form input,
+.filter-form select{ padding:10px 12px; border:1px solid #ccc; border-radius:8px; font-size:1rem;
+    height:44px; transition:.2s; }
+.filter-form input{ flex:1; min-width:220px; }
+.filter-form input:focus,
+.filter-form select:focus{ outline:none; border-color:#1a3c6e; box-shadow:0 0 5px rgba(26,60,110,.25); }
+
+/* Buttons */
+.doctor-filter-btn,
+.doctor-book-btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px;
+    font-weight:700; transition:.2s ease; }
+.doctor-filter-btn{ height:40px; margin-top:0; }
+.doctor-filter-btn .patient-icon{ width:18px; height:18px; }
+.doctor-filter-btn:hover{ transform:translateY(-2px); }
+.doctor-book-btn{ margin-top:auto; width:100%; text-align:center; border-radius:20px; height:65px; }
+.doctor-book-btn .patient-icon{ width:22px; height:22px; }
+.doctor-book-btn:hover{ transform:translateY(-2px); box-shadow:0 5px 12px rgba(0,0,0,.15); }
+
+.doctor-result-title{ color:#1a3c6e; margin-bottom:15px; }
+
+.doctor-card{ background:#fff; border-radius:12px; padding:22px; box-shadow:0 3px 10px rgba(0,0,0,.08);
+    transition:.25s ease; display:flex; flex-direction:column; height:100%; }
+.doctor-card:hover{ transform:translateY(-4px); box-shadow:0 8px 18px rgba(0,0,0,.12); }
+.doctor-card h3{ color:#1a3c6e; margin-bottom:15px; transition:.2s; }
+.doctor-card:hover h3{ color:#042045; }
+.doctor-card p{ margin-bottom:10px; color:#555; }
+.doctor-bio{ background:#f8fafc; padding:12px; border-radius:8px; color:#555; flex:1; margin-bottom:18px; }
+
+/* =====================================================
+   MY APPOINTMENTS PAGE
+===================================================== */
+.appointment-summary{ display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:20px; margin:25px 0; }
+.appointment-summary .info-card{ background:#fff; padding:22px; border-radius:12px; transition:0.2s;
+    box-shadow:0 3px 10px rgba(0,0,0,.08); text-align:center; }
+.appointment-summary .info-card:hover{ transform:translateY(-3px); box-shadow:0 8px 18px rgba(0,0,0,.12); }
+.appointment-summary h1{ color:#1a3c6e; margin-top:8px; font-size:2.5rem; }
+
+.status-badge{ padding:6px 12px; border-radius:20px; font-size:.85rem; font-weight:600; }
+.status-booked{ background:#e8f1ff; color:#1a3c6e; }
+.status-completed{ background:#e8f8ee; color:#198754; }
+.status-cancelled{ background:#f8eeee; color:#dc3545; }
+
+.appointment-cancel-btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px;
+    background:#dc3545; color:#fff;border:none; padding:8px 15px; border-radius:8px; font-weight:600;
+    cursor:pointer; transition:.2s ease; }
+.appointment-cancel-btn .patient-icon{ width:17px; height:17px; }
+.appointment-cancel-btn:hover{ background:#bb2d3b; transform:scale(1.02); }
+.appointment-history-title{ color:#1a3c6e; margin-bottom:15px; }
+
+/* =====================================================
+   BOOK APPOINTMENT PAGE
+===================================================== */
+.booking-doctor-card{ background:#fff; padding:22px; border-radius:12px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08); margin:25px 0; }
+.booking-doctor-card h3{ color:#1a3c6e; margin-bottom:11px; }
+.booking-doctor-card p{ margin-bottom:6px; line-height:1.4; color:#555; }
+
+.booking-doctor-table{ width:100%; border-collapse:collapse; }
+.booking-doctor-table td{ padding:6px 0; color:#555; vertical-align:top; }
+.booking-doctor-table td:first-child{ width:140px; color:#40454d; }
+
+.booking-slot-title{ color:#1a3c6e; margin-bottom:15px; }
+
+.booking-section{ background:#fff; padding:22px; border-radius:12px;
+    box-shadow:0 3px 10px rgba(0,0,0,.08); margin-bottom:25px; }
+.booking-section h2{ color:#1a3c6e; margin-bottom:15px; }
+
+.booking-date-form{ display:flex; align-items:flex-end; gap:15px; }
+.booking-date-form input{ height:35px; padding:10px 12px; border:1px solid #ccc;
+    border-radius:8px; font-size:1rem; }
+
+.booking-check-btn{ height:35px; display:inline-flex; align-items:center; gap:8px; border-radius:10px; }
+.booking-check-btn .patient-icon{ width:18px; height:18px; }
+.booking-check-btn:hover{ transform:scale(1.03); }
+
+.confirm-booking-btn{ min-width:220px; height:35px; border-radius:15px; margin-top:20px;
+    display:inline-flex; align-items:center;
+    justify-content:center; gap:8px; background:#1c7d50; color:white; }
+.confirm-booking-btn .patient-icon{ width:18px; height:18px; }
+.confirm-booking-btn:hover{ background:#12613c; transform:scale(1.03); }
+
+.slot-card{ background:#fff; padding:15px 20px; border-radius:10px; margin-bottom:12px; transition:.2s ease; 
+    box-shadow:0 3px 10px rgba(0,0,0,.08); }
+.slot-card:hover{ transform:scale(1.01); }
+.slot-card label{ display:flex; align-items:center; gap:12px; cursor:pointer; font-weight:600; }
+.slot-card input{ width:18px; height:18px; }
+
+.booking-empty{ background:#faf7ed; border-left:5px solid #edd693; color:#7a5b1c;
+    padding:15px 18px; border-radius:10px; margin:0 0 20px 10px; line-height:1.6; }

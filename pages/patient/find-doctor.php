@@ -22,6 +22,19 @@ require_once '../../classes/Auth.php';
 require_once '../../classes/Doctor.php';
 require_once '../../includes/flash.php';
 
+function patientIcon(string $name): string
+{
+    $icons = [
+        'filter' => '<polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"/>',
+        'calendar' => '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
+        'doctor' => '<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>',
+    ];
+    $inner = $icons[$name] ?? '';
+    return '<svg class="patient-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
+            .$inner.'</svg>';
+}
+
 Auth::requireRole('patient');
 
 $doctorModel = new Doctor();
@@ -37,47 +50,55 @@ $specializations = $doctorModel->getSpecializations();
 
 require_once '../../includes/header.php';
 ?>
-<h1>Find a Doctor</h1>
-<form method="GET" class="filter-form">
-    <input
-        type="text"
-        id="doctorSearch"
-        name="name"
-        placeholder="Search doctor..."
-        value="<?= htmlspecialchars($filterName ?? '') ?>">
+<h1 class="patient-page-title"><?= patientIcon('doctor') ?> Find a Doctor</h1>
+<p class="form-hint">Find your preferred doctor and book an appointment.</p>
 
-    <select name="department">
-        <option value="">All Departments</option>
-        <?php foreach($departments as $dept): ?>
-            <option
-                value="<?= htmlspecialchars($dept) ?>"
-                <?= $filterDept==$dept?'selected':'' ?>>
-                <?= htmlspecialchars($dept) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
+<div class="doctor-filter-box">
+    <form method="GET" class="filter-form">
+        <input
+            type="text"
+            id="doctorSearch"
+            name="name"
+            placeholder="Search doctor..."
+            value="<?= htmlspecialchars($filterName ?? '') ?>">
 
-    <select name="specialization">
-        <option value="">All Specializations</option>
-        <?php foreach($specializations as $spec): ?>
-            <option
-                value="<?= htmlspecialchars($spec) ?>"
-                <?= $filterSpec==$spec?'selected':'' ?>>
-                <?= htmlspecialchars($spec) ?>
-            </option>
-        <?php endforeach; ?>
-    </select>
-    <button type="submit" class="btn">Filter</button>
-</form>
+        <select name="department">
+            <option value="">All Departments</option>
+            <?php foreach($departments as $dept): ?>
+                <option
+                    value="<?= htmlspecialchars($dept) ?>"
+                    <?= $filterDept==$dept?'selected':'' ?>>
+                    <?= htmlspecialchars($dept) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
+        <select name="specialization">
+            <option value="">All Specializations</option>
+            <?php foreach($specializations as $spec): ?>
+                <option
+                    value="<?= htmlspecialchars($spec) ?>"
+                    <?= $filterSpec==$spec?'selected':'' ?>>
+                    <?= htmlspecialchars($spec) ?>
+                </option>
+            <?php endforeach; ?>
+        </select>
+
+        <button type="submit" class="btn doctor-filter-btn"><?= patientIcon('filter') ?>Filter</button>
+    </form>
+</div>
+
+<h2 class="doctor-result-title">Available Doctors (<?= count($doctors) ?>)</h2>
 
 <div class="doctor-grid">
     <?php foreach ($doctors as $doc): ?>
-    <div class="doctor-card">
-        <h3><?= htmlspecialchars($doc['full_name']) ?></h3>
-        <p><?= htmlspecialchars($doc['department']) ?> — <?= htmlspecialchars($doc['specialization']) ?></p>
-        <p><?= htmlspecialchars($doc['bio'] ?? '') ?></p>
-        <a href="book.php?doctor_id=<?= $doc['id'] ?>" class="btn">Book Appointment</a>
-    </div>
+        <div class="doctor-card">
+            <h3><?= htmlspecialchars($doc['full_name']) ?></h3>
+            <p><?= htmlspecialchars($doc['department']) ?> — <?= htmlspecialchars($doc['specialization']) ?></p>
+            <p class="doctor-bio"><?= htmlspecialchars($doc['bio'] ?? '') ?></p>
+            <a href="book.php?doctor_id=<?= $doc['id'] ?>" class="btn doctor-book-btn"><?= patientIcon('calendar') ?>
+                Book Appointment</a>
+        </div>
     <?php endforeach; ?>
 </div>
 

@@ -69,7 +69,7 @@ $busiestDept = scalarStat(
 );
 
 $adminNav     = 'dashboard';
-$pageSubtitle = 'System overview at a glance';
+$pageSubtitle = 'System overview';
 require_once '../../includes/admin_header.php';
 ?>
 
@@ -107,7 +107,7 @@ require_once '../../includes/admin_header.php';
 <section class="admin-card">
     <h2 class="admin-card__title">Quick actions</h2>
     <div class="quick-links">
-        <a href="users.php" class="btn"><?= adminIcon('users') ?> Manage Users</a>
+        <a href="users.php" class="btn btn--ghost"><?= adminIcon('users') ?> Manage Users</a>
         <a href="doctors.php" class="btn btn--ghost"><?= adminIcon('doctors') ?> Manage Doctors</a>
         <a href="reports.php" class="btn btn--ghost"><?= adminIcon('reports') ?> View Reports</a>
     </div>

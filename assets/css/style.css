@@ -184,13 +184,78 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 }
 
 /*Login Page*/
-.login-page {
-    max-width: 400px;
-    margin: 64px auto;
-    padding: 32px;
-    background: #ffffff;
-    border-radius: 8px;
-    text-align: center;
+.login-body{
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:28px;
+
+    background:
+        linear-gradient(rgba(26,60,110,.75), rgba(26,60,110,.75)),
+        url("../images/hospital.jpg");
+    background-size:cover;
+    background-position:center;
+}
+
+.login-brand{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    color:#fff;
+    text-align:left;
+}
+
+.login-brand img{
+    width:58px;
+    height:58px;
+    object-fit:contain;
+}
+
+.login-brand h1{
+    font-size:2rem;
+    margin:0;
+}
+
+.login-brand p{
+    margin:0;
+    font-size:.95rem;
+    color:#dbeafe;
+}
+
+.login-page{
+    width:100%;
+    max-width:420px;
+    padding:36px;
+    background:#fff;
+    border-radius:18px;
+    box-shadow:0 12px 35px rgba(0,0,0,.22);
+    text-align:center;
+}
+
+.login-page h1{
+    color:#1a3c6e;
+    margin-bottom:8px;
+}
+
+.login-subtitle{
+    color:#666;
+    margin-bottom:24px;
+}
+
+.login-btn{
+    padding: .45rem 1rem;
+    background: #1a3c6e;
+    color: #fff;
+    border: none;
+    margin-top: 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: .9rem;
+    transition: background .2s;
+    width:100%;
+    
 }
 
 /*error page*/
@@ -299,7 +364,6 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 .admin-body {
     /* Design tokens — change a value here to retheme the whole console */
     --ad-navy:        #1a3c6e;   /* brand / sidebar */
-    --ad-navy-deep:   #142e54;   /* sidebar gradient foot */
     --ad-blue:        #2c7be5;   /* interactive accent */
     --ad-teal:        #0891b2;   /* healthcare accent (charts, highlights) */
     --ad-bg:          #eef2f7;   /* page background */
@@ -334,13 +398,19 @@ nav ul a:hover { color: #fff; text-decoration: none; }
     position: fixed;
     inset: 0 auto 0 0;
     width: var(--ad-sidebar-w);
-    background: linear-gradient(180deg, var(--ad-navy) 0%, var(--ad-navy-deep) 100%);
+    background: linear-gradient(180deg, var(--ad-navy) 0%, var(--ad-navy) 100%);
     color: #fff;
     display: flex;
     flex-direction: column;
     padding: 1.25rem .9rem;
     gap: .35rem;
     z-index: 30;
+}
+
+.admin-logo{
+    width:40px;
+    height:40px;
+    object-fit:contain;
 }
 
 .admin-brand {
@@ -351,9 +421,9 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 }
 .admin-brand:hover { text-decoration: none; color: #fff; }
 .admin-brand__mark {
-    display: grid; place-items: center;
-    width: 38px; height: 38px; border-radius: 10px;
-    background: rgba(255,255,255,.14);
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 .admin-brand__mark .ad-icon { width: 22px; height: 22px; }
 .admin-brand__text { display: flex; flex-direction: column; font-weight: 700; line-height: 1.15; }
@@ -471,6 +541,21 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 .admin-body .btn--ghost:hover { background: #f3f6fb; color: var(--ad-navy); }
 .admin-body .btn--danger { background: var(--ad-danger); }
 .admin-body .btn--danger:hover { background: #b02a37; }
+
+.admin-body .btn-create{
+    min-width:160px;
+    min-height:65px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:12px;
+}
+
+.admin-body .btn-create .ad-icon{
+    width:34px;
+    height:34px;
+}
 
 /* ─── Forms in cards (responsive grid) ──────────────────────────── */
 .admin-form-grid {
@@ -591,6 +676,37 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 /* ─── Respect reduced-motion preference ─────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
     .admin-body * { transition: none !important; }
+}
+
+/* ---------- Quick Actions Icon Fix ---------- */
+.admin-body .quick-links .ad-icon{
+    width:170px;
+    height:170px;
+    overflow:visible;
+}
+
+.admin-body .quick-links a:nth-child(1) .ad-icon{
+    transform:scale(1.02);
+}
+
+.admin-body .quick-links a:nth-child(2) .ad-icon{
+    transform:scale(1.15) translateY(-10px);
+}
+
+.admin-body .quick-links a:nth-child(3) .ad-icon{
+    transform:scale(1.02);
+}
+
+.admin-body .quick-links .btn{
+    min-height:250px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    gap:30px;
+
+    padding:0 35px;
 }
 
 /* ════════════════════════════════════════════════════════════════════

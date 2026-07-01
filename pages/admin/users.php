@@ -176,7 +176,7 @@ require_once '../../includes/admin_header.php';
                 <input type="text" name="phone" id="phone" maxlength="20">
             </div>
         </div>
-        <button type="submit" class="btn"><?= adminIcon('users') ?> Create User</button>
+        <button type="submit" class="btn btn-create"><?= adminIcon('users') ?> Create User</button>
     </form>
 </section>
 

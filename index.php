@@ -8,7 +8,7 @@
  */
 
 session_start();
-require_once 'config/config.example.php';
+require_once 'config/config.php';
 require_once 'classes/Database.php';
 require_once 'classes/Auth.php';
 require_once 'includes/flash.php';
@@ -56,12 +56,19 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     <title>Login — Hospital Appointment System</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>assets/css/style.css">
 </head>
-<body>
+<body class="login-body">
+<div class="login-brand">
+    <img src="<?= BASE_URL ?>assets/images/logo.png" alt="HospitalCare Logo">
+    <div>
+        <h1>HospitalCare</h1>
+        <p>Smart Appointment & Patient Record System</p>
+    </div>
+</div>
 
 <main class="login-page">
     <?php displayFlash(); ?>
 
-    <h1>Hospital Appointment System</h1>
+    <h1>Welcome Back</h1>
     <p class="login-subtitle">Sign in to your account</p>
 
     <form method="POST" action="<?= BASE_URL ?>index.php" novalidate>
@@ -87,10 +94,10 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             >
         </div>
 
-        <button type="submit" class="btn">Sign In</button>
+        <button type="submit" class="login-btn">Sign In</button>
     </form>
 </main>
 
-<script src="<?=BASE_URL?>assets/js/app.js"></script>
+<script src="<?= BASE_URL ?>assets/js/app.js"></script>
 </body>
 </html>

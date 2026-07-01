@@ -166,7 +166,7 @@ require_once '../../includes/admin_header.php';
                 <textarea name="bio" id="bio" rows="3"></textarea>
             </div>
         </div>
-        <button type="submit" class="btn"><?= adminIcon('doctors') ?> Create Doctor</button>
+        <button type="submit" class="btn btn-create"><?= adminIcon('doctors') ?> Create Doctor</button>
     </form>
 </section>
 
@@ -197,6 +197,14 @@ require_once '../../includes/admin_header.php';
                         </span>
                     </td>
                     <td class="actions">
+                        <form method="POST" class="inline-form">
+                            <?= csrfField() ?>
+                            <input type="hidden" name="action" value="toggle_status">
+                            <input type="hidden" name="user_id" value="<?= (int) $doc['user_id'] ?>">
+                            <button type="submit" class="btn btn--small">
+                                <?= $doc['status'] === 'active' ? 'Deactivate' : 'Activate' ?>
+                            </button>
+                        </form>
                         <details class="inline-edit">
                             <summary class="btn btn--small">Edit</summary>
                             <form method="POST" class="edit-form">
@@ -218,14 +226,6 @@ require_once '../../includes/admin_header.php';
                                 <button type="submit" class="btn btn--small">Save</button>
                             </form>
                         </details>
-                        <form method="POST" class="inline-form">
-                            <?= csrfField() ?>
-                            <input type="hidden" name="action" value="toggle_status">
-                            <input type="hidden" name="user_id" value="<?= (int) $doc['user_id'] ?>">
-                            <button type="submit" class="btn btn--small">
-                                <?= $doc['status'] === 'active' ? 'Deactivate' : 'Activate' ?>
-                            </button>
-                        </form>
                     </td>
                 </tr>
                 <?php endforeach; ?>

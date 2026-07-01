@@ -596,14 +596,13 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 /* ════════════════════════════════════════════════════════════════════
    PATIENT
    ════════════════════════════════════════════════════════════════════ */
-.patient-icon{ width:20px; height:20px; }
-.patient-page-title{ color:#40454d; display:flex; align-items:center; gap:8px; }
-.patient-page-title .patient-icon, .patient-page-title .patient-record-icon{ width:26px; height:26px; }
+.dashboard-icon{ width:70px; height:70px; margin-top: 10px; margin-bottom: 10px; margin-right: 10px; }
+.header-icon{ width:30px; height:30px; margin-top: 0px; margin-bottom: 0px; margin-right: 20px; }
+.button-icon{ width:22px; height:22px; margin-top: 0px; margin-bottom: 0px; margin-right: 10px; }
 
 /* =====================================================
    Dashboard
 ===================================================== */
-.patient-dashboard .patient-page-title .patient-icon{ width:30px; height:30px; }
 .patient-dashboard .patient-page-title{ margin-bottom:30px; }
 .patient-detail{ margin-bottom:15px; background:#fff; padding:20px; border-radius:12px;
     box-shadow:0 3px 10px rgba(0,0,0,.08); transition:.2s ease;}
@@ -615,7 +614,6 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 .patient-dashboard h2{ margin:35px 0 15px; color:#1a3c6e; }
 
 .appointment-summary-card{ text-align:center; margin-bottom:35px; }
-.appointment-summary-card .patient-icon{ width:45px; height:45px; color:#1a3c6e; margin-bottom:10px; }
 .appointment-summary-card h1{ margin:5px 0; }
 
 .quick-links{ display:grid; grid-template-columns:repeat(auto-fit, minmax(230px, 1fr)); gap:20px; }
@@ -623,7 +621,6 @@ nav ul a:hover { color: #fff; text-decoration: none; }
     box-shadow:0 3px 10px rgba(0,0,0,.08); display:flex; align-items:center; gap:18px;
     color:#40454d;text-decoration:none; transition:.25s ease; }
 .quick-action-card:hover{ transform:scale(1.02); box-shadow:0 8px 18px rgba(0,0,0,.12); text-decoration:none; }
-.quick-action-card .patient-icon{ width:42px; height:42px; color:#1a3c6e; flex-shrink:0; }
 .quick-action-card strong{ display:block; font-size:1.05rem; margin-bottom:2px; }
 .quick-action-card span{ display:block; margin-top:0; line-height:1.4; color:#777; font-size:.85rem; }
 .quick-action-container{ margin-top:40px; }
@@ -687,10 +684,8 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 .doctor-book-btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px;
     font-weight:700; transition:.2s ease; }
 .doctor-filter-btn{ height:40px; margin-top:0; }
-.doctor-filter-btn .patient-icon{ width:18px; height:18px; }
 .doctor-filter-btn:hover{ transform:translateY(-2px); }
 .doctor-book-btn{ margin-top:auto; width:100%; text-align:center; border-radius:20px; height:65px; }
-.doctor-book-btn .patient-icon{ width:22px; height:22px; }
 .doctor-book-btn:hover{ transform:translateY(-2px); box-shadow:0 5px 12px rgba(0,0,0,.15); }
 
 .doctor-result-title{ color:#1a3c6e; margin-bottom:15px; }
@@ -720,7 +715,6 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 .appointment-cancel-btn{ display:inline-flex; align-items:center; justify-content:center; gap:6px;
     background:#dc3545; color:#fff;border:none; padding:8px 15px; border-radius:8px; font-weight:600;
     cursor:pointer; transition:.2s ease; }
-.appointment-cancel-btn .patient-icon{ width:17px; height:17px; }
 .appointment-cancel-btn:hover{ background:#bb2d3b; transform:scale(1.02); }
 .appointment-history-title{ color:#1a3c6e; margin-bottom:15px; }
 
@@ -743,17 +737,15 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 .booking-section h2{ color:#1a3c6e; margin-bottom:15px; }
 
 .booking-date-form{ display:flex; align-items:flex-end; gap:15px; }
-.booking-date-form input{ height:35px; padding:10px 12px; border:1px solid #ccc;
+.booking-date-form input{ height:40px; padding:10px 12px; border:1px solid #ccc;
     border-radius:8px; font-size:1rem; }
 
-.booking-check-btn{ height:35px; display:inline-flex; align-items:center; gap:8px; border-radius:10px; }
-.booking-check-btn .patient-icon{ width:18px; height:18px; }
+.booking-check-btn{ height:40px; display:inline-flex; align-items:center; gap:8px; border-radius:10px; }
 .booking-check-btn:hover{ transform:scale(1.03); }
 
-.confirm-booking-btn{ min-width:220px; height:35px; border-radius:15px; margin-top:20px;
+.confirm-booking-btn{ min-width:220px; height:40px; border-radius:20px; margin-top:20px;
     display:inline-flex; align-items:center;
     justify-content:center; gap:8px; background:#1c7d50; color:white; }
-.confirm-booking-btn .patient-icon{ width:18px; height:18px; }
 .confirm-booking-btn:hover{ background:#12613c; transform:scale(1.03); }
 
 .slot-card{ background:#fff; padding:15px 20px; border-radius:10px; margin-bottom:12px; transition:.2s ease; 
@@ -768,7 +760,6 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 /* ════════════════════════════════════════════════════════════════════
    DOCTOR
    ════════════════════════════════════════════════════════════════════ */
-.doctor-icon{ width:20px; height:20px; }
 .doctor-page-title{ color:#40454d; display:flex; align-items:center; gap:8px; }
 .doctor-page-title .doctor-icon,
 .doctor-page-title .doctor-record-icon{ width:26px; height:26px; }
@@ -776,7 +767,6 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 /* =====================================================
    Dashboard
 ===================================================== */
-.doctor-dashboard .doctor-page-title .doctor-icon{ width:30px; height:30px; }
 .doctor-dashboard .doctor-page-title{ margin-bottom:30px; }
 
 .doctor-detail{ margin-bottom:15px; background:#fff; padding:20px; border-radius:12px;
@@ -789,15 +779,16 @@ nav ul a:hover { color: #fff; text-decoration: none; }
 .doctor-dashboard h2{ margin:35px 0 15px; color:#1a3c6e; }
 
 .doctor-summary-card{ text-align:center; margin-bottom:35px; }
-.doctor-summary-card .doctor-icon{ width:45px; height:45px; color:#1a3c6e; margin-bottom:10px; }
 .doctor-summary-card h1{ margin:5px 0; font-size:2.8rem; color:#1a3c6e; }
+.icon-box{ width:60px; height:60px; margin:0 auto 15px; background:#eef4ff; border-radius:16px;
+    display:flex; align-items:center; justify-content:center; }
+.summary-icon{ width:35px; height:35px; object-fit:contain; }
 
 .quick-links{ display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:20px; }
 .quick-action-card{ background:#fff; min-height:100px; padding:22px 25px; border-radius:12px;
     box-shadow:0 3px 10px rgba(0,0,0,.08); display:flex; align-items:center; gap:18px; color:#40454d;
     text-decoration:none; transition:.25s ease; }
 .quick-action-card:hover{ transform:scale(1.02); box-shadow:0 8px 18px rgba(0,0,0,.12); text-decoration:none; }
-.quick-action-card .doctor-icon{ width:42px; height:42px; color:#1a3c6e; flex-shrink:0; }
 .quick-action-card strong{ display:block; font-size:1.05rem; margin-bottom:2px; }
 .quick-action-card span{ display:block; margin-top:0; line-height:1.4; color:#777; font-size:.85rem; }
 .doctor-quick-container{ margin-top:40px; }

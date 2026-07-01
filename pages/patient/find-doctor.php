@@ -22,19 +22,6 @@ require_once '../../classes/Auth.php';
 require_once '../../classes/Doctor.php';
 require_once '../../includes/flash.php';
 
-function patientIcon(string $name): string
-{
-    $icons = [
-        'filter' => '<polygon points="22 3 2 3 10 12.5 10 19 14 21 14 12.5 22 3"/>',
-        'calendar' => '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
-        'doctor' => '<path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8"/><path d="M4 20c0-4 4-6 8-6s8 2 8 6"/>',
-    ];
-    $inner = $icons[$name] ?? '';
-    return '<svg class="patient-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-            .$inner.'</svg>';
-}
-
 Auth::requireRole('patient');
 
 $doctorModel = new Doctor();
@@ -50,7 +37,9 @@ $specializations = $doctorModel->getSpecializations();
 
 require_once '../../includes/header.php';
 ?>
-<h1 class="patient-page-title"><?= patientIcon('doctor') ?> Find a Doctor</h1>
+<h1 class="patient-page-title">
+    <img src = "../../assets/images/doctor.png" alt="" class="header-icon">Find a Doctor
+</h1>
 <p class="form-hint">Find your preferred doctor and book an appointment.</p>
 
 <div class="doctor-filter-box">
@@ -84,7 +73,9 @@ require_once '../../includes/header.php';
             <?php endforeach; ?>
         </select>
 
-        <button type="submit" class="btn doctor-filter-btn"><?= patientIcon('filter') ?>Filter</button>
+        <button type="submit" class="btn doctor-filter-btn">
+            <img src = "../../assets/images/filter.png" alt="" class="button-icon">Filter
+        </button>
     </form>
 </div>
 
@@ -96,7 +87,8 @@ require_once '../../includes/header.php';
             <h3><?= htmlspecialchars($doc['full_name']) ?></h3>
             <p><?= htmlspecialchars($doc['department']) ?> — <?= htmlspecialchars($doc['specialization']) ?></p>
             <p class="doctor-bio"><?= htmlspecialchars($doc['bio'] ?? '') ?></p>
-            <a href="book.php?doctor_id=<?= $doc['id'] ?>" class="btn doctor-book-btn"><?= patientIcon('calendar') ?>
+            <a href="book.php?doctor_id=<?= $doc['id'] ?>" class="btn doctor-book-btn">
+                <img src = "../../assets/images/calendar2.png" alt="" class="button-icon">
                 Book Appointment</a>
         </div>
     <?php endforeach; ?>

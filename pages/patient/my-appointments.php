@@ -24,18 +24,6 @@ require_once '../../classes/Appointment.php';
 require_once '../../includes/flash.php';
 require_once '../../includes/csrf.php';
 
-function appointmentIcon(string $name): string
-{
-    $icons = [
-        'calendar' =>'<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
-        'cancel' => '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6M9 9l6 6"/>'
-    ];
-    $inner = $icons[$name] ?? '';
-    return '<svg class="patient-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-            .$inner.'</svg>';
-}
-
 Auth::requireRole('patient');
 
 $patientModel     = new Patient();
@@ -75,7 +63,10 @@ $completedAppointments = count(array_filter($appts, function($a){
 
 require_once '../../includes/header.php';
 ?>
-<h1 class="patient-page-title"><?= appointmentIcon('calendar') ?> My Appointments</h1>
+
+<h1 class="patient-page-title">
+    <img src = "../../assets/images/clock.png" alt="" class="header-icon">My Appointments
+</h1>
 <p class="form-hint">View and manage your upcoming and previous appointments.</p>
 <div class="appointment-summary">
     <div class="info-card">
@@ -115,7 +106,8 @@ require_once '../../includes/header.php';
                     <input type="hidden" name="action" value="cancel">
                     <input type="hidden" name="appointment_id" value="<?= $appt['id'] ?>">
                     <button type="submit" class="appointment-cancel-btn" onclick="return confirm('Cancel this appointment?')">
-                        <?= appointmentIcon('cancel') ?>Cancel
+                        <img src="../../assets/images/cancel.png" alt="" class="button-icon">
+                        Cancel
                     </button>
                 </form>
                 <?php endif; ?>

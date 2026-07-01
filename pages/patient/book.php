@@ -26,20 +26,6 @@ require_once '../../classes/Appointment.php';
 require_once '../../includes/flash.php';
 require_once '../../includes/csrf.php';
 
-function bookingIcon(string $name): string
-{
-    $icons = [
-        'clock' => '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',        
-        'calendar' => '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
-        'search' => '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
-        'check' => '<polyline points="20 6 9 17 4 12"/>'
-    ];
-    $inner = $icons[$name] ?? '';
-    return '<svg class="patient-icon" viewBox="0 0 24 24" fill="none" 
-            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-            .$inner.'</svg>';
-}
-
 Auth::requireRole('patient');
 
 $patientModel     = new Patient();
@@ -83,7 +69,8 @@ $openSlots  = $slotModel->findOpenByDoctor($doctorId, $filterDate);
 
 require_once '../../includes/header.php';
 ?>
-<h1 class="patient-page-title"><?= bookingIcon('clock') ?>
+<h1 class="patient-page-title">
+    <img src = "../../assets/images/calendar.png" alt="" class="header-icon">
     Book Appointment with Dr. <?= htmlspecialchars(str_replace('Dr. ', '', $doctor['full_name'])) ?>
 </h1>
 <p class="form-hint">Find your preferred appointment time.</p>
@@ -113,7 +100,9 @@ require_once '../../includes/header.php';
     <form method="GET" class="booking-date-form">
         <input type="date" name="date" value="<?= htmlspecialchars($filterDate) ?>" min="<?= date('Y-m-d')?>">
         <input type="hidden" name="doctor_id" value="<?= $doctorId ?>">
-        <button type="submit" class="btn booking-check-btn"><?= bookingIcon('search') ?>View Available Slots</button>
+        <button type="submit" class="btn booking-check-btn">
+            <img src = "../../assets/images/search2.png" alt="" class="button-icon">
+            View Available Slots</button>
     </form>
 </div>
 
@@ -136,7 +125,9 @@ require_once '../../includes/header.php';
         <?php endforeach; ?>
     <?php endif; ?>
     
-    <button type="submit" class="btn confirm-booking-btn"><?= bookingIcon('check') ?>Confirm Booking</button>
+    <button type="submit" class="btn confirm-booking-btn">
+        <img src = "../../assets/images/confirm.png" alt="" class="button-icon">
+        Confirm Booking</button>
 </form>
 
 <?php require_once '../../includes/footer.php'; ?>

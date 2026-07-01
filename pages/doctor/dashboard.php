@@ -21,20 +21,6 @@ require_once '../../classes/Doctor.php';
 require_once '../../classes/Appointment.php';
 require_once '../../includes/flash.php';
 
-function doctorIcon(string $name): string
-{
-    $icons = [
-        'wave' => '<path d="M7 11V5a2 2 0 0 1 4 0v5"/><path d="M11 10V3a2 2 0 0 1 4 0v8"/><path d="M15 10V5a2 2 0 0 1 4 0v7c0 5-3 8-8 8-3 0-5-2-7-5l-2-3a2 2 0 0 1 3-3l2 2"/>',
-        'calendar' => '<rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18"/>',
-        'user' => '<path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/>',
-        'clock' => '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>'    ];
-    $inner = $icons[$name] ?? '';
-    return '<svg class="doctor-icon" viewBox="0 0 24 24" fill="none"
-            stroke="currentColor" stroke-width="2"
-            stroke-linecap="round" stroke-linejoin="round">'
-    .$inner.'</svg>';
-}
-
 Auth::requireRole('doctor');
 
 $doctorModel      = new Doctor();
@@ -48,9 +34,8 @@ require_once '../../includes/header.php';
 ?>
 
 <div class="doctor-dashboard">
-    <h1 class="doctor-page-title"><?= doctorIcon('wave') ?>
-        Welcome, <?= htmlspecialchars($_SESSION['name']) ?>
-    </h1>
+    <br><img src = "../../assets/images/welcome.png" alt="" class="dashboard-icon">
+    <h1>Welcome, <?= htmlspecialchars($_SESSION['name']) ?></h1><br>
 
     <div class="doctor-dashboard-grid">
         <div class="doctor-detail">
@@ -64,7 +49,9 @@ require_once '../../includes/header.php';
     </div>
 
     <div class="info-card doctor-summary-card">
-        <?= doctorIcon('calendar') ?>
+        <div class= "icon-box">
+            <img src = "../../assets/images/calendar.png" alt="" class="summary-icon">
+        </div>
         <p class="schedule-date">Date: <?= date('l, d F Y') ?></p>
         <h1><?= count($todayAppts) ?></h1>
         <p>Scheduled Appointment(s)</p>
@@ -100,19 +87,22 @@ require_once '../../includes/header.php';
         <h2>Quick Actions</h2>
 
         <div class="quick-links">
-            <a href="profile.php" class="quick-action-card"><?= doctorIcon('user') ?>
+            <a href="profile.php" class="quick-action-card">
+                <img src = "../../assets/images/profile.png" alt="" class="dashboard-icon">
                 <div>
                     <strong>My Profile</strong>
                     <span>Manage personal information</span>
                 </div> 
             </a>
-            <a href="my-slots.php" class="quick-action-card"><?= doctorIcon('clock') ?>
+            <a href="my-slots.php" class="quick-action-card">
+                <img src = "../../assets/images/clock.png" alt="" class="dashboard-icon">
                 <div>
                     <strong>Manage My Slots</strong>
                     <span>Manage available schedule</span>
                 </div>
             </a>
-            <a href="my-appointments.php" class="quick-action-card"><?= doctorIcon('calendar') ?>
+            <a href="my-appointments.php" class="quick-action-card">
+                <img src = "../../assets/images/calendar.png" alt="" class="dashboard-icon">
                 <div>
                     <strong>All Appointments</strong>
                     <span>View appointment records</span>

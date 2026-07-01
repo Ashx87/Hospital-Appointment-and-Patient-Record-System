@@ -23,21 +23,6 @@ require_once '../../classes/VisitNote.php';
 require_once '../../classes/Prescription.php';
 require_once '../../includes/flash.php';
 
-function patientRecordIcon(string $name): string
-{
-    $icons = [
-'record' => '
-<rect x="4" y="3" width="16" height="19" rx="2"/>
-<path d="M9 2h6v4H9z"/>
-<path d="M12 10v6M9 13h6"/>
-',        'details' => '<path d="M4 4h16v16H4z"/><path d="M8 8h8M8 12h8M8 16h5"/>'
-    ];
-    $inner = $icons[$name] ?? '';
-    return '<svg class="patient-record-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" '
-            .'stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'
-            .$inner.'</svg>';
-}
-
 Auth::requireRole('patient');
 
 $patientModel   = new Patient();
@@ -58,7 +43,9 @@ $visitNotes = $visitNoteModel->findByPatient($patient['id']);
 require_once '../../includes/header.php';
 ?>
 
-<h1 class="patient-page-title"><?= patientRecordIcon('record') ?> My Medical Records</h1>
+<h1 class="patient-page-title">
+    <img src = "../../assets/images/record.png" alt="" class="header-icon">My Medical Records
+</h1>
 <p class="form-hint">View your previous consultation details, diagnosis, doctor's notes, and prescribed medications.</p>
 <br>
 <?php if (empty($visitNotes)): ?>
@@ -68,7 +55,7 @@ require_once '../../includes/header.php';
         <div class="patient-record-card">
 
             <div class="patient-record-header">
-                <h3 class="patient-record-title"><?= patientRecordIcon('details') ?>
+                <h3 class="patient-record-title"><img src = "../../assets/images/notes.png" alt="" class="button-icon">
                     Consultation Details
                 </h3>
             </div>
@@ -79,7 +66,7 @@ require_once '../../includes/header.php';
                 </p>
 
                 <p><strong>Doctor</strong><br>
-                    Dr. <?= htmlspecialchars($note['doctor_name'] ?? '') ?>
+                    <?= htmlspecialchars($note['doctor_name'] ?? '') ?>
                 </p>
             </div>
 
